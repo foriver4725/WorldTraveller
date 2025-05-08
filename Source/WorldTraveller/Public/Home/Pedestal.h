@@ -4,6 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "Pedestal.generated.h"
 
+class UShapeComponent;
+
 UCLASS()
 class WORLDTRAVELLER_API APedestal : public AActor
 {
@@ -13,9 +15,10 @@ public:
 	APedestal();
 
 protected:
-	virtual void BeginPlay() override;
+	virtual void BeginPlay() override final;
 
-public:
-	virtual void Tick(float DeltaTime) override;
+private:
+	TObjectPtr<UShapeComponent> collision;
 
+	void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };
