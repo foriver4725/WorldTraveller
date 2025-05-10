@@ -4,13 +4,16 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
+class UCameraComponent;
 class UInputComponent;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
+class AUiManager_Home;
+
 UCLASS()
-class WORLDTRAVELLER_API APlayerCharacter : public ACharacter
+class WORLDTRAVELLER_API APlayerCharacter final : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -19,28 +22,40 @@ public:
 
 protected:
 	virtual void BeginPlay() override final;
+	virtual void NotifyControllerChanged() override final;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override final;
+	virtual void Tick(float DeltaTime) override final;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
-	UInputMappingContext* mappingContext;
+	TObjectPtr<UInputMappingContext> mappingContext;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
-	UInputAction* submitAction;
+	TObjectPtr<UInputAction> submitAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
-	UInputAction* cancelAction;
+	TObjectPtr<UInputAction> cancelAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
-	UInputAction* jumpAction;
+	TObjectPtr<UInputAction> jumpAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
-	UInputAction* moveAction;
+	TObjectPtr<UInputAction> moveAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
-	UInputAction* lookAction;
+	TObjectPtr<UInputAction> lookAction;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "500.0"))
+	float clickableRayMaxDistance;
+
+	TObjectPtr<UCameraComponent> camera = nullptr;
+	TObjectPtr<AUiManager_Home> uiManager = nullptr;
+
+	void OnSubmit();
+	void OnCancel();
 	void Move(const FInputActionValue& value);
-
 	void Look(const FInputActionValue& value);
+
+	void CheckClickableRay();
+	void FromClickableRayResult(bool bSucceeded);
 };
