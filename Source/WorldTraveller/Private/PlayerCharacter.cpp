@@ -4,8 +4,10 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Home/UI/EDescriptionText.h"
 #include "Home/UiManager_Home.h"
-#include "EDescriptionText.h"
+
+using namespace NHome;
 
 APlayerCharacter::APlayerCharacter() : Super()
 {

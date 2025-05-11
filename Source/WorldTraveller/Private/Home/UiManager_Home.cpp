@@ -2,10 +2,16 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
-#include "EDescriptionText.h"
+#include "Home/UI/EDescriptionText.h"
+#include "Home/UI/EUiType.h"
+#include "Home/UI/IUiManager.h"
+#include "Home/UI/StartGameUiManager.h"
+
+using namespace NHome;
 
 AUiManager_Home::AUiManager_Home() : Super()
 {
+	currentDescriptionText = EDescriptionText::None;
 }
 
 void AUiManager_Home::BeginPlay()
@@ -14,13 +20,13 @@ void AUiManager_Home::BeginPlay()
 
 	if (IsValid(widgetClass))
 	{
-		UUserWidget* widget = CreateWidget<UUserWidget>(GetWorld(), widgetClass);
-		if (widget)
+		userWidget = CreateWidget<UUserWidget>(GetWorld(), widgetClass);
+		if (userWidget)
 		{
-			pointer = Cast<UImage>(widget->GetWidgetFromName(TEXT("Pointer")));
-			descriptionText = Cast<UTextBlock>(widget->GetWidgetFromName(TEXT("DescriptionText")));
+			pointer = Cast<UImage>(userWidget->GetWidgetFromName(TEXT("Pointer")));
+			descriptionText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("DescriptionText")));
 
-			widget->AddToViewport();
+			userWidget->AddToViewport();
 		}
 	}
 }
@@ -61,4 +67,20 @@ void AUiManager_Home::SetDescriptionText(EDescriptionText textType)
 			break;
 		}
 	}
+}
+
+void AUiManager_Home::SetUiEnabled(EUiType type, bool bEnabled)
+{
+	IUiManager* uiManager = nullptr;
+	switch (type)
+	{
+	case EUiType::StartGame:
+		uiManager = startGameUiManager;
+		break;
+	default:
+		break;
+	}
+
+	if (!IsValid(Cast<AActor>(uiManager))) return;
+	uiManager->SetUiEnabled(bEnabled);
 }
