@@ -10,7 +10,7 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
-class AUiManager_Home;
+class AHome_UiManager;
 
 UCLASS()
 class WORLDTRAVELLER_API APlayerCharacter final : public ACharacter
@@ -48,14 +48,17 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "500.0"))
 	float clickableRayMaxDistance;
 
-	TObjectPtr<UCameraComponent> camera = nullptr;
-	TObjectPtr<AUiManager_Home> uiManager = nullptr;
+	UPROPERTY() TObjectPtr<UCameraComponent> camera = nullptr;
+	UPROPERTY() TObjectPtr<AHome_UiManager> uiManager = nullptr;
+
+	bool bClickable = false;
+	FName clickableTag = "";
 
 	void OnSubmit();
 	void OnCancel();
 	void Move(const FInputActionValue& value);
 	void Look(const FInputActionValue& value);
 
-	void CheckClickableRay();
-	void FromClickableRayResult(bool bSucceeded);
+	bool CheckClickableRay(FName& outTag);
+	void SetDispCanClick(bool bEnabled);
 };

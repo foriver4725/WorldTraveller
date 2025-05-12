@@ -4,8 +4,12 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Home/UiManager_Home.h"
-#include "EDescriptionText.h"
+#include "Home/UI/Home_UiManager.h"
+#include "Home/UI/Home_UiDescriptionTextType.h"
+#include "Home/UI/Home_UiType.h"
+
+using DescTextType = EHome_UiDescriptionTextType;
+using UiType = EHome_UiType;
 
 APlayerCharacter::APlayerCharacter() : Super()
 {
@@ -25,25 +29,25 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	uiManager = Cast<AUiManager_Home>(UGameplayStatics::GetActorOfClass(GetWorld(), AUiManager_Home::StaticClass()));
+	uiManager = Cast<AHome_UiManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AHome_UiManager::StaticClass()));
 }
 
 void APlayerCharacter::NotifyControllerChanged()
 {
+	using Subsystem = UEnhancedInputLocalPlayerSubsystem;
+
 	Super::NotifyControllerChanged();
 
-	if (APlayerController* playerController = Cast<APlayerController>(Controller))
+	if (TObjectPtr<APlayerController> playerController = Cast<APlayerController>(Controller))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(mappingContext, 0);
-		}
+		if (TObjectPtr<Subsystem> subsystem = ULocalPlayer::GetSubsystem<Subsystem>(playerController->GetLocalPlayer()))
+			subsystem->AddMappingContext(mappingContext, 0);
 	}
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	if (UEnhancedInputComponent* inputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	if (TObjectPtr<UEnhancedInputComponent> inputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		inputComponent->BindAction(submitAction, ETriggerEvent::Started, this, &APlayerCharacter::OnSubmit);
 		inputComponent->BindAction(cancelAction, ETriggerEvent::Started, this, &APlayerCharacter::OnCancel);
@@ -58,11 +62,25 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CheckClickableRay();
+	FName outTag = "";
+	bClickable = CheckClickableRay(outTag);
+	clickableTag = outTag;
+	SetDispCanClick(bClickable);
 }
 
 void APlayerCharacter::OnSubmit()
 {
+	static const FName PedestalTag = TEXT("Pedestal");
+
+	if (bClickable)
+	{
+		if (clickableTag == PedestalTag)
+		{
+			if (IsValid(uiManager))
+				uiManager->SetUiEnabled(UiType::StartGame, true);
+		}
+		else;
+	}
 }
 
 void APlayerCharacter::OnCancel()
@@ -91,13 +109,16 @@ void APlayerCharacter::Look(const FInputActionValue& value)
 	}
 }
 
-// カメラの正面にレイを飛ばし、クリックできるものに当たったらポインターをアクティブにする
-void APlayerCharacter::CheckClickableRay()
+// カメラの正面にレイを飛ばし、有効なアクタに当たったかどうか返す
+// 有効なアクタに当たったなら、その識別タグ(インデックス1番目のもの)も返す
+bool APlayerCharacter::CheckClickableRay(FName& outTag)
 {
-	static const TArray<FName> CanClickTags
-	{
-		TEXT("CanClick"),
-	};
+	static const FName CanClickTag = TEXT("CanClick");
+
+	outTag = "";
+
+	if (!IsValid(camera))
+		return false;
 
 	FHitResult hitResult;
 	FVector start = camera->GetComponentLocation();
@@ -106,40 +127,32 @@ void APlayerCharacter::CheckClickableRay()
 	collisionParams.AddIgnoredActor(this);
 
 	if (!GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECC_Visibility, collisionParams))
+		return false;  // 何にも当たらなかった
+
+	TObjectPtr<AActor> hitActor = hitResult.GetActor();
+	if (!IsValid(hitActor))
+		return false;  // アクタに当たらなかった
+
+	if (hitActor->ActorHasTag(CanClickTag))
 	{
-		// 何にも当たらなかった
-		FromClickableRayResult(false);
-		return;
+		// 有効なアクタに当たった!
+
+		const TArray<FName>& tags = hitActor->Tags;
+		if (tags.Num() <= 1)
+			return false; // 識別タグを持っていなかった
+
+		outTag = tags[1];
+		return true;
 	}
 
-	AActor* hitActor = hitResult.GetActor();
-	if (!hitActor)
-	{
-		// アクタに当たらなかった
-		FromClickableRayResult(false);
-		return;
-	}
-
-	for (const auto& tag : CanClickTags)
-	{
-		if (hitActor->ActorHasTag(tag))
-		{
-			// 有効なアクタに当たった!
-			FromClickableRayResult(true);
-			return;
-		}
-	}
-
-	// 有効なアクタに当たらなかった
-	FromClickableRayResult(false);
-	return;
+	return false;  // 有効なアクタに当たらなかった
 }
 
-void APlayerCharacter::FromClickableRayResult(bool bSucceeded)
+void APlayerCharacter::SetDispCanClick(bool bEnabled)
 {
 	if (IsValid(uiManager))
 	{
-		uiManager->SetPointerActivation(bSucceeded);
-		uiManager->SetDescriptionText(bSucceeded ? EDescriptionText::CanClick : EDescriptionText::None);
+		uiManager->SetPointerActivation(bEnabled);
+		uiManager->SetDescriptionText(bEnabled ? DescTextType::CanClick : DescTextType::None);
 	}
 }
