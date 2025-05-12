@@ -1,7 +1,10 @@
 ﻿#include "Home/UI/Home_StartGameUiHandler.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "Kismet/GameplayStatics.h"
 #include "CursorManager.h"
+#include "Home/UI/Home_UiZOrders.h"
+#include "LevelNames.h"
 
 AHome_StartGameUiHandler::AHome_StartGameUiHandler()
 {
@@ -22,14 +25,23 @@ void AHome_StartGameUiHandler::BeginPlay()
 			if (submitButton)
 				submitButton->OnClicked.AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnSubmitButtonClicked);
 
-			userWidget->AddToViewport();
+			closeButton = Cast<UButton>(userWidget->GetWidgetFromName(TEXT("CloseButton")));
+			if (closeButton)
+				closeButton->OnClicked.AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnCloseButtonClicked);
+
+			userWidget->AddToViewport(FHome_UiZOrders::StartGame);
 		}
 	}
 }
 
 void AHome_StartGameUiHandler::OnSubmitButtonClicked()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Submit Button Clicked!"));
+	UGameplayStatics::OpenLevel(GetWorld(), FLevelNames::Main);
+}
+
+void AHome_StartGameUiHandler::OnCloseButtonClicked()
+{
+	SetUiEnabled(false);
 }
 
 bool AHome_StartGameUiHandler::GetUiEnabled() const
@@ -39,11 +51,15 @@ bool AHome_StartGameUiHandler::GetUiEnabled() const
 
 void AHome_StartGameUiHandler::SetUiEnabled(bool bEnabled)
 {
-	if (!IsValid(userWidget)) return;
-
 	enabled = bEnabled;
-	userWidget->SetIsEnabled(bEnabled);
-	userWidget->SetRenderOpacity(bEnabled ? 1 : 0);
+
+	UGameplayStatics::SetGamePaused(GetWorld(), bEnabled);
+
+	if (IsValid(userWidget))
+	{
+		userWidget->SetIsEnabled(bEnabled);
+		userWidget->SetRenderOpacity(bEnabled ? 1 : 0);
+	}
 
 	if (IsValid(cursorManager))
 		cursorManager->SetCursorEnabled(bEnabled);

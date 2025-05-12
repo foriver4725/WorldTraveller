@@ -33,9 +33,10 @@ private:
 
 	UPROPERTY() TObjectPtr<UUserWidget> userWidget = nullptr;
 	UPROPERTY() TObjectPtr<UButton> submitButton = nullptr;
+	UPROPERTY() TObjectPtr<UButton> closeButton = nullptr;
 
 	bool enabled = false;
 
-	UFUNCTION()
-	void OnSubmitButtonClicked();
+	UFUNCTION() void OnSubmitButtonClicked();
+	UFUNCTION() void OnCloseButtonClicked();
 };

@@ -17,10 +17,18 @@ void ACursorManager::SetCursorEnabled(bool bEnabled)
 	if (!IsValid(playerController))
 		return;
 
-	playerController->bShowMouseCursor = bEnabled;
-
 	if (bEnabled)
-		playerController->SetInputMode(FInputModeGameAndUI());
+	{
+		playerController->SetShowMouseCursor(true);
+		playerController->SetInputMode(FInputModeUIOnly());
+
+		int32 width, height;
+		playerController->GetViewportSize(width, height);
+		playerController->SetMouseLocation(width >> 1, height >> 1);
+	}
 	else
+	{
+		playerController->SetShowMouseCursor(false);
 		playerController->SetInputMode(FInputModeGameOnly());
+	}
 }
