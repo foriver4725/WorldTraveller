@@ -2,31 +2,33 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "UiManager_Home.generated.h"
+#include "Home_UiManager.generated.h"
 
 class UUserWidget;
 class UImage;
 class UTextBlock;
 class UButton;
 
-namespace NHome
-{
-	enum class EDescriptionText : uint8;
-	enum class EUiType : uint8;
-}
+enum class EHome_UiDescriptionTextType : uint8;
+enum class EHome_UiType : uint8;
 
-class AStartGameUiManager;
+class AHome_StartGameUiHandler;
 
 UCLASS()
-class WORLDTRAVELLER_API AUiManager_Home final : public AActor
+class WORLDTRAVELLER_API AHome_UiManager final : public AActor
 {
 	GENERATED_BODY()
 
+	using DescTextType = EHome_UiDescriptionTextType;
+	using UiType = EHome_UiType;
+
 public:
-	AUiManager_Home();
+	AHome_UiManager();
 
 	void SetPointerActivation(bool bActivate);
-	void SetDescriptionText(NHome::EDescriptionText textType);
+	void SetDescriptionText(DescTextType textType);
+
+	void SetUiEnabled(UiType type, bool bEnabled);
 
 protected:
 	virtual void BeginPlay() override final;
@@ -36,14 +38,12 @@ private:
 	TSubclassOf<UUserWidget> widgetClass;
 
 	UPROPERTY(EditInstanceOnly, Category = "Property|UI")
-	TObjectPtr<AStartGameUiManager> startGameUiManager;
+	TObjectPtr<AHome_StartGameUiHandler> startGameUiHandler;
 
 	TObjectPtr<UUserWidget> userWidget = nullptr;
 	TObjectPtr<UImage> pointer = nullptr;
 	TObjectPtr<UTextBlock> descriptionText = nullptr;
 
 	bool bIsPointerActive = false;
-	NHome::EDescriptionText currentDescriptionText;
-
-	void SetUiEnabled(NHome::EUiType type, bool bEnabled);
+	EHome_UiDescriptionTextType currentDescriptionText;
 };

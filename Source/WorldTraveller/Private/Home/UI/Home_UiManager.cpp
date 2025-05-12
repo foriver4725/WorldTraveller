@@ -1,20 +1,20 @@
-﻿#include "Home/UiManager_Home.h"
+﻿#include "Home/UI/Home_UiManager.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
-#include "Home/UI/EDescriptionText.h"
-#include "Home/UI/EUiType.h"
-#include "Home/UI/IUiManager.h"
-#include "Home/UI/StartGameUiManager.h"
+#include "Home/UI/Home_StartGameUiHandler.h"
+#include "Home/UI/Home_UiType.h"
+#include "Home/UI/Home_UiDescriptionTextType.h"
 
-using namespace NHome;
+using DescTextType = EHome_UiDescriptionTextType;
+using UiType = EHome_UiType;
 
-AUiManager_Home::AUiManager_Home() : Super()
+AHome_UiManager::AHome_UiManager() : Super()
 {
-	currentDescriptionText = EDescriptionText::None;
+	currentDescriptionText = DescTextType::None;
 }
 
-void AUiManager_Home::BeginPlay()
+void AHome_UiManager::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -31,7 +31,7 @@ void AUiManager_Home::BeginPlay()
 	}
 }
 
-void AUiManager_Home::SetPointerActivation(bool bActivate)
+void AHome_UiManager::SetPointerActivation(bool bActivate)
 {
 	if (bIsPointerActive == bActivate)
 		return;
@@ -44,7 +44,7 @@ void AUiManager_Home::SetPointerActivation(bool bActivate)
 	}
 }
 
-void AUiManager_Home::SetDescriptionText(EDescriptionText textType)
+void AHome_UiManager::SetDescriptionText(DescTextType textType)
 {
 	static const FText NoneText = FText::GetEmpty();
 	static const FText CanClickText = FText::FromString(TEXT("Click or A"));
@@ -57,10 +57,10 @@ void AUiManager_Home::SetDescriptionText(EDescriptionText textType)
 	{
 		switch (textType)
 		{
-		case EDescriptionText::None:
+		case DescTextType::None:
 			descriptionText->SetText(NoneText);
 			break;
-		case EDescriptionText::CanClick:
+		case DescTextType::CanClick:
 			descriptionText->SetText(CanClickText);
 			break;
 		default:
@@ -69,18 +69,20 @@ void AUiManager_Home::SetDescriptionText(EDescriptionText textType)
 	}
 }
 
-void AUiManager_Home::SetUiEnabled(EUiType type, bool bEnabled)
+void AHome_UiManager::SetUiEnabled(UiType type, bool bEnabled)
 {
-	IUiManager* uiManager = nullptr;
+	AActor* uiHandlerActor = nullptr;
 	switch (type)
 	{
-	case EUiType::StartGame:
-		uiManager = startGameUiManager;
+	case UiType::StartGame:
+		uiHandlerActor = startGameUiHandler;
 		break;
 	default:
 		break;
 	}
 
-	if (!IsValid(Cast<AActor>(uiManager))) return;
-	uiManager->SetUiEnabled(bEnabled);
+	if (!IsValid(uiHandlerActor)) return;
+
+	if (IHome_UiHandler* uiHandler = Cast<IHome_UiHandler>(uiHandlerActor))
+		uiHandler->SetUiEnabled(bEnabled);
 }

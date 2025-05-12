@@ -1,6 +1,6 @@
-﻿#include "Home/GameMode_Home.h"
+﻿#include "Home/Home_GameMode.h"
 
-AGameMode_Home::AGameMode_Home() : Super()
+AHome_GameMode::AHome_GameMode() : Super()
 {
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/_MyContents/Blueprints/Character/BP_PlayerCharacter"));
 	if (PlayerPawnClassFinder.Succeeded())
