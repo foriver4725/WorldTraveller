@@ -40,9 +40,9 @@ private:
 	UPROPERTY(EditInstanceOnly, Category = "Property|UI")
 	TObjectPtr<AHome_StartGameUiHandler> startGameUiHandler;
 
-	TObjectPtr<UUserWidget> userWidget = nullptr;
-	TObjectPtr<UImage> pointer = nullptr;
-	TObjectPtr<UTextBlock> descriptionText = nullptr;
+	UPROPERTY() TObjectPtr<UUserWidget> userWidget = nullptr;
+	UPROPERTY() TObjectPtr<UImage> pointer = nullptr;
+	UPROPERTY() TObjectPtr<UTextBlock> descriptionText = nullptr;
 
 	bool bIsPointerActive = false;
 	EHome_UiDescriptionTextType currentDescriptionText;

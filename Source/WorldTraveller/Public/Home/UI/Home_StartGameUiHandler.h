@@ -8,6 +8,8 @@
 class UUserWidget;
 class UButton;
 
+class ACursorManager;
+
 UCLASS()
 class WORLDTRAVELLER_API AHome_StartGameUiHandler final : public AActor, public IHome_UiHandler
 {
@@ -26,8 +28,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Property|UI")
 	TSubclassOf<UUserWidget> widgetClass;
 
-	TObjectPtr<UUserWidget> userWidget = nullptr;
-	TObjectPtr<UButton> submitButton = nullptr;
+	UPROPERTY(EditInstanceOnly, Category = "Property|Dependency")
+	TObjectPtr<ACursorManager> cursorManager;
+
+	UPROPERTY() TObjectPtr<UUserWidget> userWidget = nullptr;
+	UPROPERTY() TObjectPtr<UButton> submitButton = nullptr;
 
 	bool enabled = false;
 

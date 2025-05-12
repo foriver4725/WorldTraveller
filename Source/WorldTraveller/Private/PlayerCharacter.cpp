@@ -34,20 +34,20 @@ void APlayerCharacter::BeginPlay()
 
 void APlayerCharacter::NotifyControllerChanged()
 {
+	using Subsystem = UEnhancedInputLocalPlayerSubsystem;
+
 	Super::NotifyControllerChanged();
 
-	if (APlayerController* playerController = Cast<APlayerController>(Controller))
+	if (TObjectPtr<APlayerController> playerController = Cast<APlayerController>(Controller))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(mappingContext, 0);
-		}
+		if (TObjectPtr<Subsystem> subsystem = ULocalPlayer::GetSubsystem<Subsystem>(playerController->GetLocalPlayer()))
+			subsystem->AddMappingContext(mappingContext, 0);
 	}
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	if (UEnhancedInputComponent* inputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	if (TObjectPtr<UEnhancedInputComponent> inputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		inputComponent->BindAction(submitAction, ETriggerEvent::Started, this, &APlayerCharacter::OnSubmit);
 		inputComponent->BindAction(cancelAction, ETriggerEvent::Started, this, &APlayerCharacter::OnCancel);
@@ -117,6 +117,9 @@ bool APlayerCharacter::CheckClickableRay(FName& outTag)
 
 	outTag = "";
 
+	if (!IsValid(camera))
+		return false;
+
 	FHitResult hitResult;
 	FVector start = camera->GetComponentLocation();
 	FVector end = start + camera->GetForwardVector() * clickableRayMaxDistance;
@@ -126,8 +129,8 @@ bool APlayerCharacter::CheckClickableRay(FName& outTag)
 	if (!GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECC_Visibility, collisionParams))
 		return false;  // 何にも当たらなかった
 
-	AActor* hitActor = hitResult.GetActor();
-	if (!hitActor)
+	TObjectPtr<AActor> hitActor = hitResult.GetActor();
+	if (!IsValid(hitActor))
 		return false;  // アクタに当たらなかった
 
 	if (hitActor->ActorHasTag(CanClickTag))

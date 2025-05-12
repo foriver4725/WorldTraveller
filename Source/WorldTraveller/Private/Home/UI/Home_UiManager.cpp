@@ -9,7 +9,7 @@
 using DescTextType = EHome_UiDescriptionTextType;
 using UiType = EHome_UiType;
 
-AHome_UiManager::AHome_UiManager() : Super()
+AHome_UiManager::AHome_UiManager()
 {
 	currentDescriptionText = DescTextType::None;
 }
@@ -21,7 +21,7 @@ void AHome_UiManager::BeginPlay()
 	if (IsValid(widgetClass))
 	{
 		userWidget = CreateWidget<UUserWidget>(GetWorld(), widgetClass);
-		if (userWidget)
+		if (IsValid(userWidget))
 		{
 			pointer = Cast<UImage>(userWidget->GetWidgetFromName(TEXT("Pointer")));
 			descriptionText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("DescriptionText")));
@@ -40,7 +40,7 @@ void AHome_UiManager::SetPointerActivation(bool bActivate)
 	if (IsValid(pointer))
 	{
 		pointer->SetColorAndOpacity(bActivate ? FLinearColor::Red : FLinearColor::White);
-		pointer->SetBrushSize(bActivate ? FVector2D(16) : FVector2D(8));
+		pointer->SetDesiredSizeOverride(bActivate ? FVector2D(16) : FVector2D(8));
 	}
 }
 
@@ -71,7 +71,7 @@ void AHome_UiManager::SetDescriptionText(DescTextType textType)
 
 void AHome_UiManager::SetUiEnabled(UiType type, bool bEnabled)
 {
-	AActor* uiHandlerActor = nullptr;
+	TObjectPtr<AActor> uiHandlerActor = nullptr;
 	switch (type)
 	{
 	case UiType::StartGame:

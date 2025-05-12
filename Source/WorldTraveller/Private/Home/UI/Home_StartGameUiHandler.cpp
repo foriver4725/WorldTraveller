@@ -1,8 +1,9 @@
 ﻿#include "Home/UI/Home_StartGameUiHandler.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "CursorManager.h"
 
-AHome_StartGameUiHandler::AHome_StartGameUiHandler() : Super()
+AHome_StartGameUiHandler::AHome_StartGameUiHandler()
 {
 }
 
@@ -13,7 +14,7 @@ void AHome_StartGameUiHandler::BeginPlay()
 	if (IsValid(widgetClass))
 	{
 		userWidget = CreateWidget<UUserWidget>(GetWorld(), widgetClass);
-		if (userWidget)
+		if (IsValid(userWidget))
 		{
 			SetUiEnabled(false);
 
@@ -43,4 +44,7 @@ void AHome_StartGameUiHandler::SetUiEnabled(bool bEnabled)
 	enabled = bEnabled;
 	userWidget->SetIsEnabled(bEnabled);
 	userWidget->SetRenderOpacity(bEnabled ? 1 : 0);
+
+	if (IsValid(cursorManager))
+		cursorManager->SetCursorEnabled(bEnabled);
 }

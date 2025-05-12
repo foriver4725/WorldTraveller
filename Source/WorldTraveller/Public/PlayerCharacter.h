@@ -48,8 +48,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "500.0"))
 	float clickableRayMaxDistance;
 
-	TObjectPtr<UCameraComponent> camera = nullptr;
-	TObjectPtr<AHome_UiManager> uiManager = nullptr;
+	UPROPERTY() TObjectPtr<UCameraComponent> camera = nullptr;
+	UPROPERTY() TObjectPtr<AHome_UiManager> uiManager = nullptr;
 
 	bool bClickable = false;
 	FName clickableTag = "";
