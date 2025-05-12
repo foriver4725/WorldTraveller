@@ -5,6 +5,7 @@
 #include "Home/UI/Home_StartGameUiHandler.h"
 #include "Home/UI/Home_UiType.h"
 #include "Home/UI/Home_UiDescriptionTextType.h"
+#include "Home/UI/Home_UiZOrders.h"
 
 using DescTextType = EHome_UiDescriptionTextType;
 using UiType = EHome_UiType;
@@ -26,7 +27,7 @@ void AHome_UiManager::BeginPlay()
 			pointer = Cast<UImage>(userWidget->GetWidgetFromName(TEXT("Pointer")));
 			descriptionText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("DescriptionText")));
 
-			userWidget->AddToViewport();
+			userWidget->AddToViewport(FHome_UiZOrders::General);
 		}
 	}
 }

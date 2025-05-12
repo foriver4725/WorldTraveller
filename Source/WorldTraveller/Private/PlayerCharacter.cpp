@@ -70,11 +70,11 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 void APlayerCharacter::OnSubmit()
 {
-	static const FName PedestalTag = TEXT("Pedestal");
+	static const FName Home_PedestalTag = TEXT("Pedestal");
 
 	if (bClickable)
 	{
-		if (clickableTag == PedestalTag)
+		if (clickableTag == Home_PedestalTag)
 		{
 			if (IsValid(uiManager))
 				uiManager->SetUiEnabled(UiType::StartGame, true);
