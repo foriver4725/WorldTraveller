@@ -3,12 +3,12 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Home/UI/Home_StartGameUiHandler.h"
-#include "Home/UI/Home_UiType.h"
-#include "Home/UI/Home_UiDescriptionTextType.h"
 #include "Home/UI/Home_UiZOrders.h"
+#include "Enums/UiType.h"
+#include "Enums/UiDescriptionTextType.h"
 
-using DescTextType = EHome_UiDescriptionTextType;
-using UiType = EHome_UiType;
+using DescTextType = EUiDescriptionTextType;
+using UiType = EUiType;
 
 AHome_UiManager::AHome_UiManager()
 {
@@ -75,7 +75,7 @@ void AHome_UiManager::SetUiEnabled(UiType type, bool bEnabled)
 	TObjectPtr<AActor> uiHandlerActor = nullptr;
 	switch (type)
 	{
-	case UiType::StartGame:
+	case UiType::Home_StartGame:
 		uiHandlerActor = startGameUiHandler;
 		break;
 	default:
