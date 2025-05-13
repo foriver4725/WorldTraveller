@@ -8,4 +8,6 @@ enum class EUiType : uint8
 {
 	Home_General,
 	Home_StartGame,
+
+	Main_General,
 };
