@@ -4,12 +4,12 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Home/UI/Home_UiManager.h"
-#include "Home/UI/Home_UiDescriptionTextType.h"
-#include "Home/UI/Home_UiType.h"
+#include "UiManager.h"
+#include "Enums/UiDescriptionTextType.h"
+#include "Enums/UiType.h"
 
-using DescTextType = EHome_UiDescriptionTextType;
-using UiType = EHome_UiType;
+using DescTextType = EUiDescriptionTextType;
+using UiType = EUiType;
 
 APlayerCharacter::APlayerCharacter() : Super()
 {
@@ -29,7 +29,10 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	uiManager = Cast<AHome_UiManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AHome_UiManager::StaticClass()));
+	TArray<AActor*> uiManagers;
+	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UUiManager::StaticClass(), uiManagers);
+	if (uiManagers.Num() == 1)
+		uiManager = uiManagers[0];  // レベル内に一つのみ存在するはず
 }
 
 void APlayerCharacter::NotifyControllerChanged()
@@ -77,7 +80,10 @@ void APlayerCharacter::OnSubmit()
 		if (clickableTag == Home_PedestalTag)
 		{
 			if (IsValid(uiManager))
-				uiManager->SetUiEnabled(UiType::StartGame, true);
+			{
+				if (IUiManager* iUiManager = Cast<IUiManager>(uiManager))
+					iUiManager->SetUiEnabled(UiType::Home_StartGame, true);
+			}
 		}
 		else;
 	}
@@ -152,7 +158,10 @@ void APlayerCharacter::SetDispCanClick(bool bEnabled)
 {
 	if (IsValid(uiManager))
 	{
-		uiManager->SetPointerActivation(bEnabled);
-		uiManager->SetDescriptionText(bEnabled ? DescTextType::CanClick : DescTextType::None);
+		if (IUiManager* iUiManager = Cast<IUiManager>(uiManager))
+		{
+			iUiManager->SetPointerActivation(bEnabled);
+			iUiManager->SetDescriptionText(bEnabled ? DescTextType::CanClick : DescTextType::None);
+		}
 	}
 }

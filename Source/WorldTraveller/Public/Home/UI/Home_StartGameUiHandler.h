@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Home/UI/Home_UiHandler.h"
+#include "UiHandler.h"
 #include "Home_StartGameUiHandler.generated.h"
 
 class UUserWidget;
@@ -11,7 +11,7 @@ class UButton;
 class ACursorManager;
 
 UCLASS()
-class WORLDTRAVELLER_API AHome_StartGameUiHandler final : public AActor, public IHome_UiHandler
+class WORLDTRAVELLER_API AHome_StartGameUiHandler final : public AActor, public IUiHandler
 {
 	GENERATED_BODY()
 

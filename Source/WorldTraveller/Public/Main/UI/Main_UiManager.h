@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "UiManager.h"
-#include "Home_UiManager.generated.h"
+#include "Main_UiManager.generated.h"
 
 class UUserWidget;
 class UImage;
@@ -13,10 +13,8 @@ class UButton;
 enum class EUiDescriptionTextType : uint8;
 enum class EUiType : uint8;
 
-class AHome_StartGameUiHandler;
-
 UCLASS()
-class WORLDTRAVELLER_API AHome_UiManager final : public AActor, public IUiManager
+class WORLDTRAVELLER_API AMain_UiManager final : public AActor, public IUiManager
 {
 	GENERATED_BODY()
 
@@ -24,7 +22,7 @@ class WORLDTRAVELLER_API AHome_UiManager final : public AActor, public IUiManage
 	using UiType = EUiType;
 
 public:
-	AHome_UiManager();
+	AMain_UiManager();
 
 	virtual void SetPointerActivation(bool bActivate) override final;
 	virtual void SetDescriptionText(DescTextType textType) override final;
@@ -36,9 +34,6 @@ protected:
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Property|UI")
 	TSubclassOf<UUserWidget> widgetClass;
-
-	UPROPERTY(EditInstanceOnly, Category = "Property|UI")
-	TObjectPtr<AHome_StartGameUiHandler> startGameUiHandler;
 
 	UPROPERTY() TObjectPtr<UUserWidget> userWidget = nullptr;
 	UPROPERTY() TObjectPtr<UImage> pointer = nullptr;

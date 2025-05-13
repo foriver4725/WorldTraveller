@@ -1,22 +1,21 @@
-﻿#include "Home/UI/Home_UiManager.h"
+﻿#include "Main/UI/Main_UiManager.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "UiHandler.h"
-#include "Home/UI/Home_StartGameUiHandler.h"
-#include "Home/UI/Home_UiZOrders.h"
+#include "Main/UI/Main_UiZOrders.h"
 #include "Enums/UiType.h"
 #include "Enums/UiDescriptionTextType.h"
 
 using DescTextType = EUiDescriptionTextType;
 using UiType = EUiType;
 
-AHome_UiManager::AHome_UiManager()
+AMain_UiManager::AMain_UiManager()
 {
 	currentDescriptionText = DescTextType::None;
 }
 
-void AHome_UiManager::BeginPlay()
+void AMain_UiManager::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -28,12 +27,12 @@ void AHome_UiManager::BeginPlay()
 			pointer = Cast<UImage>(userWidget->GetWidgetFromName(TEXT("Pointer")));
 			descriptionText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("DescriptionText")));
 
-			userWidget->AddToViewport(FHome_UiZOrders::General);
+			userWidget->AddToViewport(FMain_UiZOrders::General);
 		}
 	}
 }
 
-void AHome_UiManager::SetPointerActivation(bool bActivate)
+void AMain_UiManager::SetPointerActivation(bool bActivate)
 {
 	if (bIsPointerActive == bActivate)
 		return;
@@ -46,7 +45,7 @@ void AHome_UiManager::SetPointerActivation(bool bActivate)
 	}
 }
 
-void AHome_UiManager::SetDescriptionText(DescTextType textType)
+void AMain_UiManager::SetDescriptionText(DescTextType textType)
 {
 	static const FText NoneText = FText::GetEmpty();
 	static const FText CanClickText = FText::FromString(TEXT("Click or A"));
@@ -71,17 +70,10 @@ void AHome_UiManager::SetDescriptionText(DescTextType textType)
 	}
 }
 
-void AHome_UiManager::SetUiEnabled(UiType type, bool bEnabled)
+void AMain_UiManager::SetUiEnabled(UiType type, bool bEnabled)
 {
 	TObjectPtr<AActor> uiHandlerActor = nullptr;
-	switch (type)
-	{
-	case UiType::Home_StartGame:
-		uiHandlerActor = startGameUiHandler;
-		break;
-	default:
-		break;
-	}
+	// Add switch statement here.
 
 	if (!IsValid(uiHandlerActor)) return;
 

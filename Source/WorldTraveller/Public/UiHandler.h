@@ -2,15 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "Home_UiHandler.generated.h"
+#include "UiHandler.generated.h"
 
 UINTERFACE(MinimalAPI)
-class UHome_UiHandler : public UInterface
+class UUiHandler : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class WORLDTRAVELLER_API IHome_UiHandler
+class WORLDTRAVELLER_API IUiHandler
 {
 	GENERATED_BODY()
 
