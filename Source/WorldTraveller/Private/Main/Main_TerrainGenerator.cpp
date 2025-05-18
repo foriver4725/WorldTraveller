@@ -125,9 +125,11 @@ void AMain_TerrainGenerator::GenerateNewMesh(int32 seed)
 	mesh->bUseAsyncCooking = true;
 
 	// マテリアル設定
-	if (IsValid(material))
+	if (materials.Num() > 0)
 	{
-		mesh->SetMaterial(0, material);
+		const TObjectPtr<UMaterial> material = materials[FMath::RandRange(0, materials.Num() - 1)];
+		if (IsValid(material))
+			mesh->SetMaterial(0, material);
 	}
 
 	// メッシュの位置を設定

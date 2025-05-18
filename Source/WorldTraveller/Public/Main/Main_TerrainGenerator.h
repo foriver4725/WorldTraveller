@@ -19,7 +19,7 @@ protected:
 
 private:
 	UPROPERTY(EditInstanceOnly, Category = "Property|Data")
-	TObjectPtr<UMaterial> material;
+	TArray<TObjectPtr<UMaterial>> materials;
 
 	// ノイズのサイズ
 	UPROPERTY(EditInstanceOnly, Category = "Property|Value", meta = (ClampMin = "0", ClampMax = "500"))

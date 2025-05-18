@@ -24,12 +24,6 @@ APlayerCharacter::APlayerCharacter() : Super()
 	camera->SetupAttachment(GetCapsuleComponent());
 	camera->SetRelativeLocation(FVector(-10.f, 0.f, 60.f));
 	camera->bUsePawnControlRotation = true;
-
-	// スロープリミットを設定
-	GetCharacterMovement()->SetWalkableFloorAngle(slopLimit);
-
-	// ジャンプの高さを設定
-	GetCharacterMovement()->JumpZVelocity = jumpZVelocity;
 }
 
 void APlayerCharacter::BeginPlay()
@@ -40,6 +34,9 @@ void APlayerCharacter::BeginPlay()
 	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UUiManager::StaticClass(), uiManagers);
 	if (uiManagers.Num() == 1)
 		uiManager = uiManagers[0];  // レベル内に一つのみ存在するはず
+
+	GetCharacterMovement()->SetWalkableFloorAngle(slopLimit);
+	GetCharacterMovement()->JumpZVelocity = jumpZVelocity;
 }
 
 void APlayerCharacter::NotifyControllerChanged()
