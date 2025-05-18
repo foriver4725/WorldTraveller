@@ -5,6 +5,7 @@
 #include "CursorManager.h"
 #include "Home/UI/Home_UiZOrders.h"
 #include "LevelNames.h"
+#include "WorldTravellerGameInstance.h"
 
 AHome_StartGameUiHandler::AHome_StartGameUiHandler()
 {
@@ -36,6 +37,12 @@ void AHome_StartGameUiHandler::BeginPlay()
 
 void AHome_StartGameUiHandler::OnSubmitButtonClicked()
 {
+	if (TObjectPtr<UWorldTravellerGameInstance> gameInstance = Cast<UWorldTravellerGameInstance>(GetGameInstance()))
+	{
+		if (IsValid(gameInstance))
+			gameInstance->SetSeed(12345);
+	}
+
 	UGameplayStatics::OpenLevel(GetWorld(), FLevelNames::Main);
 }
 

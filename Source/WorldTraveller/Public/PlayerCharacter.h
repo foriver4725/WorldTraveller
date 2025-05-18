@@ -43,6 +43,18 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
 	TObjectPtr<UInputAction> lookAction;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "10.0", ClampMax = "80.0"))
+	float slopLimit = 45.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "20.0"))
+	float speedMultiplier = 1.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "2000.0"))
+	float jumpZVelocity = 600.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "20.0"))
+	float lookSensitivityMultiplier = 1.0f;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "500.0"))
 	float clickableRayMaxDistance;
 

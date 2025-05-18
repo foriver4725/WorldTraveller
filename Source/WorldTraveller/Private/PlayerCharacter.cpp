@@ -2,6 +2,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "UiManager.h"
@@ -23,6 +24,12 @@ APlayerCharacter::APlayerCharacter() : Super()
 	camera->SetupAttachment(GetCapsuleComponent());
 	camera->SetRelativeLocation(FVector(-10.f, 0.f, 60.f));
 	camera->bUsePawnControlRotation = true;
+
+	// スロープリミットを設定
+	GetCharacterMovement()->SetWalkableFloorAngle(slopLimit);
+
+	// ジャンプの高さを設定
+	GetCharacterMovement()->JumpZVelocity = jumpZVelocity;
 }
 
 void APlayerCharacter::BeginPlay()
@@ -95,7 +102,7 @@ void APlayerCharacter::OnCancel()
 
 void APlayerCharacter::Move(const FInputActionValue& value)
 {
-	FVector2D movementVector = value.Get<FVector2D>();
+	FVector2D movementVector = value.Get<FVector2D>() * speedMultiplier;
 
 	if (IsValid(Controller))
 	{
@@ -106,7 +113,7 @@ void APlayerCharacter::Move(const FInputActionValue& value)
 
 void APlayerCharacter::Look(const FInputActionValue& value)
 {
-	FVector2D lookAxisVector = value.Get<FVector2D>();
+	FVector2D lookAxisVector = value.Get<FVector2D>() * lookSensitivityMultiplier;
 
 	if (IsValid(Controller))
 	{
