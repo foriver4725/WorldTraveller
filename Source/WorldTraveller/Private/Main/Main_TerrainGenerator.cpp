@@ -9,23 +9,10 @@ AMain_TerrainGenerator::AMain_TerrainGenerator()
 	SetRootComponent(mesh);
 }
 
-void AMain_TerrainGenerator::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (TObjectPtr<UWorldTravellerGameInstance> gameInstance = Cast<UWorldTravellerGameInstance>(GetGameInstance()))
-	{
-		if (IsValid(gameInstance))
-			GenerateNewMesh(gameInstance->GetSeed());
-	}
-}
-
-void AMain_TerrainGenerator::GenerateNewMesh(int32 seed)
+void AMain_TerrainGenerator::GenerateRandomTerrain()
 {
 	if (hasGeneratedMesh) return;
 	hasGeneratedMesh |= true;
-
-	FMath::RandInit(seed);
 
 	// パラメータの計算
 	const uint16 Width = noiseSize, Height = noiseSize;

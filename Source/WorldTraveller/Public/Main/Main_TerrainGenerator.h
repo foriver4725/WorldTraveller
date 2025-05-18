@@ -14,8 +14,7 @@ class WORLDTRAVELLER_API AMain_TerrainGenerator final : public AActor
 public:
 	AMain_TerrainGenerator();
 
-protected:
-	virtual void BeginPlay() override final;
+	void GenerateRandomTerrain();
 
 private:
 	UPROPERTY(EditInstanceOnly, Category = "Property|Data")
@@ -55,6 +54,4 @@ private:
 	UPROPERTY() TObjectPtr<UProceduralMeshComponent> mesh = nullptr;
 
 	bool hasGeneratedMesh = false;
-
-	void GenerateNewMesh(int32 seed);
 };

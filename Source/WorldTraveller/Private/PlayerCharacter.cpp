@@ -36,7 +36,7 @@ void APlayerCharacter::BeginPlay()
 		uiManager = uiManagers[0];  // レベル内に一つのみ存在するはず
 
 	GetCharacterMovement()->SetWalkableFloorAngle(slopLimit);
-	GetCharacterMovement()->JumpZVelocity = jumpZVelocity;
+	GetCharacterMovement()->JumpZVelocity = jumpZVelocity * jumpZVelocityMultiplier;
 }
 
 void APlayerCharacter::NotifyControllerChanged()
@@ -168,4 +168,10 @@ void APlayerCharacter::SetDispCanClick(bool bEnabled)
 			iUiManager->SetDescriptionText(bEnabled ? DescTextType::CanClick : DescTextType::None);
 		}
 	}
+}
+
+void APlayerCharacter::RandomizeJumpZVelocityMultiplier()
+{
+	jumpZVelocityMultiplier = FMath::RandRange(jumpZVelocityMultiplierMin, jumpZVelocityMultiplierMax);
+	GetCharacterMovement()->JumpZVelocity = jumpZVelocity * jumpZVelocityMultiplier;
 }
