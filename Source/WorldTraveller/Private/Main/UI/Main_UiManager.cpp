@@ -26,6 +26,7 @@ void AMain_UiManager::BeginPlay()
 		{
 			pointer = Cast<UImage>(userWidget->GetWidgetFromName(TEXT("Pointer")));
 			descriptionText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("DescriptionText")));
+			coordinatesText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("CoordinatesText")));
 
 			userWidget->AddToViewport(FMain_UiZOrders::General);
 		}
@@ -79,4 +80,13 @@ void AMain_UiManager::SetUiEnabled(UiType type, bool bEnabled)
 
 	if (IUiHandler* uiHandler = Cast<IUiHandler>(uiHandlerActor))
 		uiHandler->SetUiEnabled(bEnabled);
+}
+
+void AMain_UiManager::SetSeedText(int32 seed)
+{
+	if (IsValid(coordinatesText))
+	{
+		FString coordText = FString::Printf(TEXT("Eigenvalue : %d"), seed);
+		coordinatesText->SetText(FText::FromString(coordText));
+	}
 }

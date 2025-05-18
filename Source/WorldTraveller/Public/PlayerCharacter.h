@@ -18,6 +18,8 @@ class WORLDTRAVELLER_API APlayerCharacter final : public ACharacter
 public:
 	APlayerCharacter();
 
+	void RandomizeJumpZVelocityMultiplier();
+
 protected:
 	virtual void BeginPlay() override final;
 	virtual void NotifyControllerChanged() override final;
@@ -43,12 +45,31 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
 	TObjectPtr<UInputAction> lookAction;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "10.0", ClampMax = "80.0"))
+	float slopLimit = 45.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "20.0"))
+	float speedMultiplier = 1.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "2000.0"))
+	float jumpZVelocity = 500.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "20.0"))
+	float lookSensitivityMultiplier = 1.0f;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "500.0"))
-	float clickableRayMaxDistance;
+	float clickableRayMaxDistance = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "10.0"))
+	float jumpZVelocityMultiplierMin = 0.8f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "10.0"))
+	float jumpZVelocityMultiplierMax = 3.0f;
 
 	UPROPERTY() TObjectPtr<UCameraComponent> camera = nullptr;
 	UPROPERTY() TObjectPtr<AActor> uiManager = nullptr;
 
+	float jumpZVelocityMultiplier = 1.0f;
 	bool bClickable = false;
 	FName clickableTag = "";
 

@@ -2,6 +2,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "UiManager.h"
@@ -33,6 +34,9 @@ void APlayerCharacter::BeginPlay()
 	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UUiManager::StaticClass(), uiManagers);
 	if (uiManagers.Num() == 1)
 		uiManager = uiManagers[0];  // レベル内に一つのみ存在するはず
+
+	GetCharacterMovement()->SetWalkableFloorAngle(slopLimit);
+	GetCharacterMovement()->JumpZVelocity = jumpZVelocity * jumpZVelocityMultiplier;
 }
 
 void APlayerCharacter::NotifyControllerChanged()
@@ -95,7 +99,7 @@ void APlayerCharacter::OnCancel()
 
 void APlayerCharacter::Move(const FInputActionValue& value)
 {
-	FVector2D movementVector = value.Get<FVector2D>();
+	FVector2D movementVector = value.Get<FVector2D>() * speedMultiplier;
 
 	if (IsValid(Controller))
 	{
@@ -106,7 +110,7 @@ void APlayerCharacter::Move(const FInputActionValue& value)
 
 void APlayerCharacter::Look(const FInputActionValue& value)
 {
-	FVector2D lookAxisVector = value.Get<FVector2D>();
+	FVector2D lookAxisVector = value.Get<FVector2D>() * lookSensitivityMultiplier;
 
 	if (IsValid(Controller))
 	{
@@ -164,4 +168,10 @@ void APlayerCharacter::SetDispCanClick(bool bEnabled)
 			iUiManager->SetDescriptionText(bEnabled ? DescTextType::CanClick : DescTextType::None);
 		}
 	}
+}
+
+void APlayerCharacter::RandomizeJumpZVelocityMultiplier()
+{
+	jumpZVelocityMultiplier = FMath::RandRange(jumpZVelocityMultiplierMin, jumpZVelocityMultiplierMax);
+	GetCharacterMovement()->JumpZVelocity = jumpZVelocity * jumpZVelocityMultiplier;
 }
