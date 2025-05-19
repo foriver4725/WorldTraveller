@@ -30,7 +30,7 @@ private:
 	UPROPERTY(EditInstanceOnly, Category = "Property|Dependency")
 	TObjectPtr<ADirectionalLight> sun;
 
-	bool isFirstTick = true;
+	bool bIsFirstTick = true;
 
 	void Setup();
 };
