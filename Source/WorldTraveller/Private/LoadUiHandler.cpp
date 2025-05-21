@@ -1,10 +1,13 @@
 ﻿#include "LoadUiHandler.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
+#include "Kismet/GameplayStatics.h"
 #include "Extensions.h"
+#include "PlayerCharacter.h"
 
 ALoadUiHandler::ALoadUiHandler()
 {
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void ALoadUiHandler::BeginPlay()
@@ -22,6 +25,11 @@ void ALoadUiHandler::BeginPlay()
 		}
 	}
 
+	playerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
+	if (IsValid(playerCharacter))
+		playerCharacter->SetInputEnabled(false);
+
+	fadeTime = 0.0f;
 	fadeState = EFadeState::FadeIn;
 	SetUiTransparency(1);
 	SetUiEnabled(true);
@@ -43,7 +51,9 @@ void ALoadUiHandler::Tick(float DeltaTime)
 			fadeTime = 0.0f;
 			fadeState = EFadeState::InGame;
 			SetUiEnabled(false);
-			// フェードイン完了
+
+			if (IsValid(playerCharacter))
+				playerCharacter->SetInputEnabled(true);
 		}
 	}
 	else if (fadeState == EFadeState::FadeOut)
@@ -57,17 +67,24 @@ void ALoadUiHandler::Tick(float DeltaTime)
 		{
 			fadeTime = 0.0f;
 			fadeState = EFadeState::None;
-			// フェードアウト完了(シーン遷移処理)
+
+			if (!openingLevelName.IsNone())
+				UGameplayStatics::OpenLevel(this, openingLevelName);
 		}
 	}
 }
 
-void ALoadUiHandler::StartFadeOut()
+void ALoadUiHandler::StartFadeOut(const FName& levelNameToOpenOnFadeOutFinished)
 {
 	if (fadeState != EFadeState::InGame) return;
 	fadeState = EFadeState::FadeOut;
 	SetUiTransparency(0);
 	SetUiEnabled(true);
+
+	if (IsValid(playerCharacter))
+		playerCharacter->SetInputEnabled(false);
+
+	openingLevelName = levelNameToOpenOnFadeOutFinished;
 }
 
 bool ALoadUiHandler::GetUiEnabled() const

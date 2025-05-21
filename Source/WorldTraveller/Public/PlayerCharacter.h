@@ -9,6 +9,7 @@ class UInputComponent;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+class ALoadUiHandler;
 
 UCLASS()
 class WORLDTRAVELLER_API APlayerCharacter final : public ACharacter
@@ -19,6 +20,7 @@ public:
 	APlayerCharacter();
 
 	void RandomizeJumpZVelocityMultiplier();
+	void SetInputEnabled(bool bEnabled);
 
 protected:
 	virtual void BeginPlay() override final;

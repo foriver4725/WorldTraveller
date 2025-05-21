@@ -175,3 +175,12 @@ void APlayerCharacter::RandomizeJumpZVelocityMultiplier()
 	jumpZVelocityMultiplier = FMath::RandRange(jumpZVelocityMultiplierMin, jumpZVelocityMultiplierMax);
 	GetCharacterMovement()->JumpZVelocity = jumpZVelocity * jumpZVelocityMultiplier;
 }
+
+void APlayerCharacter::SetInputEnabled(bool bEnabled)
+{
+	if (APlayerController* pc = Cast<APlayerController>(GetController()))
+	{
+		if (bEnabled) EnableInput(pc);
+		else DisableInput(pc);
+	}
+}

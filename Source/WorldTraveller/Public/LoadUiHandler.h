@@ -7,6 +7,7 @@
 
 class UUserWidget;
 class UImage;
+class APlayerCharacter;
 
 UCLASS()
 class WORLDTRAVELLER_API ALoadUiHandler final : public AActor, public IUiHandler
@@ -16,7 +17,7 @@ class WORLDTRAVELLER_API ALoadUiHandler final : public AActor, public IUiHandler
 public:
 	ALoadUiHandler();
 
-	void StartFadeOut();
+	void StartFadeOut(const FName& levelNameToOpenOnFadeOutFinished);
 
 protected:
 	virtual void BeginPlay() override final;
@@ -47,11 +48,13 @@ private:
 
 	void SetUiTransparency(float alpha);
 
+	UPROPERTY() TObjectPtr<APlayerCharacter> playerCharacter = nullptr;
 	UPROPERTY() TObjectPtr<UUserWidget> userWidget = nullptr;
 	UPROPERTY() TObjectPtr<UImage> panel = nullptr;
 
 	EFadeState fadeState = EFadeState::FadeIn;
 	float fadeTime = 0.0f;
+	FName openingLevelName = NAME_None;
 
 	bool enabled = false;
 };
