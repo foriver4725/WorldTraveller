@@ -60,14 +60,14 @@ void AHome_StartGameUiHandler::SetUiEnabled(bool bEnabled)
 {
 	enabled = bEnabled;
 
-	UGameplayStatics::SetGamePaused(GetWorld(), bEnabled);
+	UGameplayStatics::SetGamePaused(GetWorld(), enabled);
 
 	if (IsValid(userWidget))
 	{
-		userWidget->SetIsEnabled(bEnabled);
-		userWidget->SetRenderOpacity(bEnabled ? 1 : 0);
+		userWidget->SetIsEnabled(enabled);
+		userWidget->SetVisibility(enabled ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 	}
 
 	if (IsValid(cursorManager))
-		cursorManager->SetCursorEnabled(bEnabled);
+		cursorManager->SetCursorEnabled(enabled);
 }
