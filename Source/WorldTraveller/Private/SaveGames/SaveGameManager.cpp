@@ -103,8 +103,8 @@ static USaveGame* Create(ESaveGameType type)
 
 static FName GetSlotName(ESaveGameType type)
 {
-	if (type == ESaveGameType::Prog) return "Prog";
-	if (type == ESaveGameType::Item) return "Item";
+	if (type == ESaveGameType::Prog) return TEXT("Prog");
+	if (type == ESaveGameType::Item) return TEXT("Item");
 
 	return NAME_None;
 }

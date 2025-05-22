@@ -1,0 +1,43 @@
+﻿#include "Main/Main_GameManager.h"
+#include "Kismet/GameplayStatics.h"
+#include "Main/Main_Coin.h"
+#include "PlayerCharacter.h"
+
+AMain_GameManager::AMain_GameManager()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+void AMain_GameManager::BeginPlay()
+{
+	Super::BeginPlay();
+
+	playerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
+}
+
+void AMain_GameManager::Tick(float DeltaTime)
+{
+	if ((gameTime += DeltaTime) >= coinGenerateInterval)
+	{
+		gameTime -= coinGenerateInterval;
+		GenerateNewCoin();
+	}
+}
+
+void AMain_GameManager::GenerateNewCoin()
+{
+	if (!IsValid(playerCharacter)) return;
+
+	FVector spawnLocation = playerCharacter->GetActorLocation() + FVector(FMath::RandPointInCircle(spawnRadius), spawnHeight);
+	FRotator spawnRotation = FRotator(FQuat(FVector::UpVector, FMath::RandRange(0.0f, 360.0f)));
+
+	if (AMain_Coin* coinInstance = GetWorld()->SpawnActor<AMain_Coin>(coinOriginal, spawnLocation, spawnRotation))
+	{
+		coinInstance->OnHitPlayer.BindUObject(this, &AMain_GameManager::OnPlayerGetCoin);
+	}
+}
+
+void AMain_GameManager::OnPlayerGetCoin()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Player Got Coin!"));
+}
