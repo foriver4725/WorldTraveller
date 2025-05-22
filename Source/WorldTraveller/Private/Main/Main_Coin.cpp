@@ -25,7 +25,7 @@ void AMain_Coin::Tick(float DeltaTime)
 		return;
 	}
 
-	staticMeshComponent->AddWorldRotation(FQuat(FVector::UpVector, rotateSpeed * DeltaTime));
+	staticMeshComponent->AddWorldRotation(FQuat(FVector::UpVector, FMath::DegreesToRadians(rotateSpeed) * DeltaTime));
 }
 
 void AMain_Coin::OnHit(

@@ -24,9 +24,9 @@ void AMain_SeedLoader::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// 1フレーム待ってから実行 (他アクタの初期化処理を確実に待つ)
-	if (bIsFirstTick) bIsFirstTick = false;
-	else
+	if (bIsFirstTick)
 	{
+		bIsFirstTick = false;
 		Setup();
 	}
 }

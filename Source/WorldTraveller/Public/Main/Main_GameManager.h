@@ -33,6 +33,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.1", ClampMax = "10000.0"))
 	float spawnRadius = 1000.0f;
 
+	// プレイヤーの周りにコインを生成「しない」半径.
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.1", ClampMax = "10000.0"))
+	float notSpawnRadius = 100.0f;
+
 	// プレイヤーの上にコインを生成する高さ.
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.1", ClampMax = "1000.0"))
 	float spawnHeight = 300.0f;
