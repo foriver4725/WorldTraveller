@@ -44,6 +44,8 @@ void AHome_StartGameUiHandler::OnSubmitButtonClicked()
 			gameInstance->SetSeed(FMath::Rand());
 	}
 
+	SetUiEnabled(false);
+
 	if (IsValid(loadUiHandler))
 		loadUiHandler->StartFadeOut(FLevelNames::Main);
 }
