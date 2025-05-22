@@ -7,6 +7,7 @@
 class AMain_UiManager;
 class AMain_TerrainGenerator;
 class ADirectionalLight;
+class ALoadUiHandler;
 
 UCLASS()
 class WORLDTRAVELLER_API AMain_SeedLoader final : public AActor
@@ -29,6 +30,9 @@ private:
 
 	UPROPERTY(EditInstanceOnly, Category = "Property|Dependency")
 	TObjectPtr<ADirectionalLight> sun;
+
+	UPROPERTY(EditInstanceOnly, Category = "Property|Dependency")
+	TObjectPtr<ALoadUiHandler> loadUiHandler;
 
 	bool bIsFirstTick = true;
 

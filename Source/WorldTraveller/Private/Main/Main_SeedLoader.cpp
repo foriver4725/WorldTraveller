@@ -6,6 +6,7 @@
 #include "WorldTravellerGameInstance.h"
 #include "Main/UI/Main_UiManager.h"
 #include "Main/Main_TerrainGenerator.h"
+#include "LoadUiHandler.h"
 #include "Extensions.h"
 
 AMain_SeedLoader::AMain_SeedLoader()
@@ -50,10 +51,6 @@ void AMain_SeedLoader::Setup()
 			sun->GetLightComponent()->SetIntensity(6.f * FMath::RandRange(0.8f, 1.2f));
 		}
 
-		// シード値をUIに表示
-		if (IsValid(uiManager))
-			uiManager->SetSeedText(seed);
-
 		// 地形生成
 		if (IsValid(terrainGenerator))
 			terrainGenerator->GenerateRandomTerrain();
@@ -62,5 +59,13 @@ void AMain_SeedLoader::Setup()
 		TObjectPtr<APlayerCharacter> playerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		if (IsValid(playerCharacter))
 			playerCharacter->RandomizeJumpZVelocityMultiplier();
+
+		// シード値をUIに表示
+		if (IsValid(uiManager))
+			uiManager->SetSeedText(seed);
+
+		// 初期化処理が終了したので、フェードインを行う
+		if (IsValid(loadUiHandler))
+			loadUiHandler->StartFadeIn();
 	}
 }

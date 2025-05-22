@@ -172,7 +172,7 @@ void APlayerCharacter::SetDispCanClick(bool bEnabled)
 
 void APlayerCharacter::RandomizeJumpZVelocityMultiplier()
 {
-	jumpZVelocityMultiplier = FMath::RandRange(jumpZVelocityMultiplierMin, jumpZVelocityMultiplierMax);
+	jumpZVelocityMultiplier = FMath::RandRange(jumpZVelocityMultiplierOnRandomizedMin, jumpZVelocityMultiplierOnRandomizedMax);
 	GetCharacterMovement()->JumpZVelocity = jumpZVelocity * jumpZVelocityMultiplier;
 }
 

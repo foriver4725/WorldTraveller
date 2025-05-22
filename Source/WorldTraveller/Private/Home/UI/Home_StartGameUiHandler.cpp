@@ -3,6 +3,7 @@
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 #include "CursorManager.h"
+#include "LoadUiHandler.h"
 #include "Home/UI/Home_UiZOrders.h"
 #include "LevelNames.h"
 #include "WorldTravellerGameInstance.h"
@@ -40,10 +41,11 @@ void AHome_StartGameUiHandler::OnSubmitButtonClicked()
 	if (TObjectPtr<UWorldTravellerGameInstance> gameInstance = Cast<UWorldTravellerGameInstance>(GetGameInstance()))
 	{
 		if (IsValid(gameInstance))
-			gameInstance->SetSeed(12345);
+			gameInstance->SetSeed(FMath::Rand());
 	}
 
-	UGameplayStatics::OpenLevel(GetWorld(), FLevelNames::Main);
+	if (IsValid(loadUiHandler))
+		loadUiHandler->StartFadeOut(FLevelNames::Main);
 }
 
 void AHome_StartGameUiHandler::OnCloseButtonClicked()

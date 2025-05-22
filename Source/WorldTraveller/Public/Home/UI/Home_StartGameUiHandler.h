@@ -9,6 +9,7 @@ class UUserWidget;
 class UButton;
 
 class ACursorManager;
+class ALoadUiHandler;
 
 UCLASS()
 class WORLDTRAVELLER_API AHome_StartGameUiHandler final : public AActor, public IUiHandler
@@ -30,6 +31,9 @@ private:
 
 	UPROPERTY(EditInstanceOnly, Category = "Property|Dependency")
 	TObjectPtr<ACursorManager> cursorManager;
+
+	UPROPERTY(EditInstanceOnly, Category = "Property|Dependency")
+	TObjectPtr<ALoadUiHandler> loadUiHandler;
 
 	UPROPERTY() TObjectPtr<UUserWidget> userWidget = nullptr;
 	UPROPERTY() TObjectPtr<UButton> submitButton = nullptr;

@@ -17,6 +17,7 @@ class WORLDTRAVELLER_API ALoadUiHandler final : public AActor, public IUiHandler
 public:
 	ALoadUiHandler();
 
+	void StartFadeIn();
 	void StartFadeOut(const FName& levelNameToOpenOnFadeOutFinished);
 
 protected:
@@ -31,6 +32,7 @@ private:
 	// 必ず上から下の順に遷移し、逆行することはない.
 	enum class EFadeState : uint8
 	{
+		Waiting,
 		FadeIn,
 		InGame,
 		FadeOut,
@@ -52,7 +54,7 @@ private:
 	UPROPERTY() TObjectPtr<UUserWidget> userWidget = nullptr;
 	UPROPERTY() TObjectPtr<UImage> panel = nullptr;
 
-	EFadeState fadeState = EFadeState::FadeIn;
+	EFadeState fadeState = EFadeState::Waiting;
 	float fadeTime = 0.0f;
 	FName openingLevelName = NAME_None;
 

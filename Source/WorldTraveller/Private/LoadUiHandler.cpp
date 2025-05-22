@@ -29,8 +29,6 @@ void ALoadUiHandler::BeginPlay()
 	if (IsValid(playerCharacter))
 		playerCharacter->SetInputEnabled(false);
 
-	fadeTime = 0.0f;
-	fadeState = EFadeState::FadeIn;
 	SetUiTransparency(1);
 	SetUiEnabled(true);
 }
@@ -74,6 +72,12 @@ void ALoadUiHandler::Tick(float DeltaTime)
 	}
 }
 
+void ALoadUiHandler::StartFadeIn()
+{
+	if (fadeState != EFadeState::Waiting) return;
+	fadeState = EFadeState::FadeIn;
+}
+
 void ALoadUiHandler::StartFadeOut(const FName& levelNameToOpenOnFadeOutFinished)
 {
 	if (fadeState != EFadeState::InGame) return;
@@ -106,9 +110,5 @@ void ALoadUiHandler::SetUiEnabled(bool bEnabled)
 void ALoadUiHandler::SetUiTransparency(float alpha)
 {
 	if (IsValid(panel))
-	{
-		FLinearColor color = panel->GetColorAndOpacity();
-		color.A = alpha;
-		panel->SetColorAndOpacity(color);
-	}
+		panel->SetOpacity(alpha);
 }

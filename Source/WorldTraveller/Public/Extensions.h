@@ -14,6 +14,7 @@ namespace Extensions
 	{
 		if (a == b) return 0;
 		float o = (x - a) * (d - c) / (b - a) + c;
-		return FMath::Clamp(o, c, d);
+		if (c <= d) return FMath::Clamp(o, c, d);
+		else return FMath::Clamp(o, d, c);
 	}
 }

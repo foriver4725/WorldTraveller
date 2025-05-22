@@ -86,7 +86,7 @@ void AMain_UiManager::SetSeedText(int32 seed)
 {
 	if (IsValid(coordinatesText))
 	{
-		FString coordText = FString::Printf(TEXT("Eigenvalue : %d"), seed);
+		FString coordText = FString::Printf(TEXT("Eigenvalue : %010d"), seed);
 		coordinatesText->SetText(FText::FromString(coordText));
 	}
 }
