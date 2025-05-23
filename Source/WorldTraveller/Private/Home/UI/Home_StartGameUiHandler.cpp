@@ -47,7 +47,7 @@ void AHome_StartGameUiHandler::OnSubmitButtonClicked()
 	SetUiEnabled(false);
 
 	if (IsValid(loadUiHandler))
-		loadUiHandler->StartFadeOut(FLevelNames::Main);
+		loadUiHandler->StartFadeOut(FLevelNames::Main());
 }
 
 void AHome_StartGameUiHandler::OnCloseButtonClicked()

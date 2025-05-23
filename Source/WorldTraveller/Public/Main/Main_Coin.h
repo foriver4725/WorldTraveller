@@ -38,11 +38,12 @@ private:
 	float autoDestroyTime = 0;
 
 	UFUNCTION()
-	void OnHit(
-		UPrimitiveComponent* hitComponent,
-		AActor* otherActor,
-		UPrimitiveComponent* otherComp,
-		FVector normalImpulse,
-		const FHitResult& hitResult
+	void OnBeginOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult
 	);
 };
