@@ -126,10 +126,7 @@ void AMain_GameManager::Tick(float DeltaTime)
 			starAmount = CalcStarFromCoin(coinAmount);
 			if (ASaveGameManager* saveGameManager = ASaveGameManager::Instance())
 				if (UItemSaveGame* itemSaveGame = Cast<UItemSaveGame>(saveGameManager->Get(ESaveGameType::Item)))
-				{
 					itemSaveGame->AddStarAmount(starAmount);
-					UE_LOG(LogTemp, Warning, TEXT("Now Star Amount : %d"), itemSaveGame->GetStarAmount());
-				}
 
 			SetTimerText(0);
 			SetEndTextEnabled(true);
