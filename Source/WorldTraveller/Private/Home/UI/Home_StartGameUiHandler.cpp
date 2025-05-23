@@ -3,6 +3,7 @@
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 #include "CursorManager.h"
+#include "LoadUiHandler.h"
 #include "Home/UI/Home_UiZOrders.h"
 #include "LevelNames.h"
 #include "WorldTravellerGameInstance.h"
@@ -40,10 +41,13 @@ void AHome_StartGameUiHandler::OnSubmitButtonClicked()
 	if (TObjectPtr<UWorldTravellerGameInstance> gameInstance = Cast<UWorldTravellerGameInstance>(GetGameInstance()))
 	{
 		if (IsValid(gameInstance))
-			gameInstance->SetSeed(12345);
+			gameInstance->SetSeed(FMath::Rand());
 	}
 
-	UGameplayStatics::OpenLevel(GetWorld(), FLevelNames::Main);
+	SetUiEnabled(false);
+
+	if (IsValid(loadUiHandler))
+		loadUiHandler->StartFadeOut(FLevelNames::Main);
 }
 
 void AHome_StartGameUiHandler::OnCloseButtonClicked()
@@ -60,14 +64,14 @@ void AHome_StartGameUiHandler::SetUiEnabled(bool bEnabled)
 {
 	enabled = bEnabled;
 
-	UGameplayStatics::SetGamePaused(GetWorld(), bEnabled);
+	UGameplayStatics::SetGamePaused(GetWorld(), enabled);
 
 	if (IsValid(userWidget))
 	{
-		userWidget->SetIsEnabled(bEnabled);
-		userWidget->SetRenderOpacity(bEnabled ? 1 : 0);
+		userWidget->SetIsEnabled(enabled);
+		userWidget->SetVisibility(enabled ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 	}
 
 	if (IsValid(cursorManager))
-		cursorManager->SetCursorEnabled(bEnabled);
+		cursorManager->SetCursorEnabled(enabled);
 }

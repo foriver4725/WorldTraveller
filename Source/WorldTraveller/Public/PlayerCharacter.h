@@ -9,6 +9,7 @@ class UInputComponent;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+class ALoadUiHandler;
 
 UCLASS()
 class WORLDTRAVELLER_API APlayerCharacter final : public ACharacter
@@ -19,6 +20,7 @@ public:
 	APlayerCharacter();
 
 	void RandomizeJumpZVelocityMultiplier();
+	void SetInputEnabled(bool bEnabled);
 
 protected:
 	virtual void BeginPlay() override final;
@@ -61,10 +63,10 @@ private:
 	float clickableRayMaxDistance = 100.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "10.0"))
-	float jumpZVelocityMultiplierMin = 0.8f;
+	float jumpZVelocityMultiplierOnRandomizedMin = 1.2f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "10.0"))
-	float jumpZVelocityMultiplierMax = 3.0f;
+	float jumpZVelocityMultiplierOnRandomizedMax = 3.0f;
 
 	UPROPERTY() TObjectPtr<UCameraComponent> camera = nullptr;
 	UPROPERTY() TObjectPtr<AActor> uiManager = nullptr;
