@@ -7,7 +7,6 @@
 #include "SoundManager.h"
 #include "SaveGames/SaveGameManager.h"
 #include "SaveGames/ItemSaveGame.h"
-#include "Enums/SoundType.h"
 #include "Enums/SaveGameType.h"
 #include "LevelNames.h"
 #include "Extensions.h"

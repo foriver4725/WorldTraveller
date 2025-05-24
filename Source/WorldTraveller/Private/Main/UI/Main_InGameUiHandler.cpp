@@ -2,7 +2,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/CanvasPanel.h"
-#include "Main/UI/Main_UiZOrders.h"
+#include "UiZOrders.h"
 
 AMain_InGameUiHandler::AMain_InGameUiHandler()
 {
@@ -24,7 +24,7 @@ void AMain_InGameUiHandler::BeginPlay()
 		resultStarText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("ResultStarText")));
 		resultCountDownText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("ResultCountDownText")));
 
-		userWidget->AddToViewport(FMain_UiZOrders::InGame);
+		userWidget->AddToViewport(FUiZOrders::Main_InGame);
 	}
 }
 
@@ -35,6 +35,7 @@ bool AMain_InGameUiHandler::GetUiEnabled() const
 
 void AMain_InGameUiHandler::SetUiEnabled(bool bEnabled)
 {
+	if (enabled == bEnabled) return;
 	enabled = bEnabled;
 
 	if (IsValid(userWidget))

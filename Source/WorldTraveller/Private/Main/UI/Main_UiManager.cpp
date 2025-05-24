@@ -3,7 +3,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "UiHandler.h"
-#include "Main/UI/Main_UiZOrders.h"
+#include "UiZOrders.h"
 #include "Enums/UiType.h"
 #include "Enums/UiDescriptionTextType.h"
 
@@ -28,7 +28,7 @@ void AMain_UiManager::BeginPlay()
 			descriptionText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("DescriptionText")));
 			coordinatesText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("CoordinatesText")));
 
-			userWidget->AddToViewport(FMain_UiZOrders::General);
+			userWidget->AddToViewport(FUiZOrders::Main_General);
 		}
 	}
 }

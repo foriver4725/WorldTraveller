@@ -2,8 +2,9 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
 #include "Kismet/GameplayStatics.h"
-#include "Extensions.h"
 #include "PlayerCharacter.h"
+#include "Extensions.h"
+#include "UiZOrders.h"
 
 ALoadUiHandler::ALoadUiHandler()
 {
@@ -21,7 +22,7 @@ void ALoadUiHandler::BeginPlay()
 		{
 			panel = Cast<UImage>(userWidget->GetWidgetFromName("Panel"));
 
-			userWidget->AddToViewport(MAX_int32);
+			userWidget->AddToViewport(FUiZOrders::Load);
 		}
 	}
 

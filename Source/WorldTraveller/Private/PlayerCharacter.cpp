@@ -95,6 +95,7 @@ void APlayerCharacter::OnSubmit()
 
 void APlayerCharacter::OnCancel()
 {
+	OnPlayerCancelled.Broadcast();
 }
 
 void APlayerCharacter::Move(const FInputActionValue& value)

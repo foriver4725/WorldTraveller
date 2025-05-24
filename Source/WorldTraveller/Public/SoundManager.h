@@ -2,9 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Enums/SoundType.h"
 #include "SoundManager.generated.h"
-
-enum class ESoundType : uint8;
 
 UCLASS()
 class WORLDTRAVELLER_API ASoundManager final : public AActor
