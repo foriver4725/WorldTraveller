@@ -55,14 +55,18 @@ void AMain_InGameUiHandler::SetTimerText(float remainTime)
 	timerText->SetText(FText::FromString(FString::Printf(TEXT("%02d:%02d"), minutes, seconds)));
 }
 
-void AMain_InGameUiHandler::SetTimerTextAppearance(bool bFinishSoon)
+void AMain_InGameUiHandler::SetTimerTextColor(const FLinearColor& color)
+{
+	if (UTextBlock* p = GetValid(timerText))
+		p->SetColorAndOpacity(color);
+}
+
+void AMain_InGameUiHandler::SetTimerTextFontSize(float size)
 {
 	if (UTextBlock* p = GetValid(timerText))
 	{
-		p->SetColorAndOpacity(bFinishSoon ? FLinearColor::Red : FLinearColor::White);
-
 		FSlateFontInfo fontInfo = p->Font;
-		fontInfo.Size = bFinishSoon ? 180 : 90;
+		fontInfo.Size = size;
 		p->SetFont(fontInfo);
 	}
 }

@@ -8,6 +8,7 @@
 #include "SaveGames/ItemSaveGame.h"
 #include "Enums/SaveGameType.h"
 #include "LevelNames.h"
+#include "Extensions.h"
 
 AMain_GameManager::AMain_GameManager()
 {
@@ -32,7 +33,8 @@ void AMain_GameManager::Tick(float DeltaTime)
 		if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
 		{
 			p->SetTimerText(gameLimitTime);
-			p->SetTimerTextAppearance(false);
+			p->SetTimerTextColor(timerTextColorNormal);
+			p->SetTimerTextFontSize(timerTextFontSizeNormal);
 			p->SetCoinAmountText(0);
 			p->SetDescTextEnabled(false);
 			p->SetCountDownText(FText::GetEmpty());
@@ -118,14 +120,38 @@ void AMain_GameManager::Tick(float DeltaTime)
 	{
 		if ((gameTime -= DeltaTime) <= finishSoonTime)
 		{
-			state = EState::Playing_FinishSoon;
+			state = EState::Playing_FinishSoon_DoingTransition;
 
 			if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
-				p->SetTimerTextAppearance(true);
+				p->SetTimerTextColor(timerTextColorFinishSoon);
 		}
 
 		if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
 			p->SetTimerText(gameTime);
+	}
+	else if (state == EState::Playing_FinishSoon_DoingTransition)
+	{
+		if ((gameTime -= DeltaTime) <= finishSoonTime - onFinishSoonTimerTextScalingDuration)
+		{
+			state = EState::Playing_FinishSoon;
+
+			if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
+				p->SetTimerTextFontSize(timerTextFontSizeFinishSoon);
+		}
+
+		if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
+		{
+			using namespace Extensions;
+
+			float fontSize = RemapClamped(
+				gameTime,
+				finishSoonTime, finishSoonTime - onFinishSoonTimerTextScalingDuration,
+				timerTextFontSizeNormal, timerTextFontSizeFinishSoon
+			);
+
+			p->SetTimerText(gameTime);
+			p->SetTimerTextFontSize(fontSize);
+		}
 	}
 	else if (state == EState::Playing_FinishSoon)
 	{

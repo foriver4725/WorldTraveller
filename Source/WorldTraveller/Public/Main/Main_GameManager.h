@@ -49,9 +49,25 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "1.0", ClampMax = "300.0"))
 	float gameLimitTime = 30.0f;
 
-	// ゲームの残り時間が少なくなったときの警告時間(秒).
+	// ゲームの残り時間が少ない警告を表示する、境界時間(秒).
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "30.0"))
 	float finishSoonTime = 5.0f;
+
+	// ゲームの残り時間が少ない警告を表示する時、残り時間のテキストを拡大する遷移時間(秒).
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "10.0"))
+	float onFinishSoonTimerTextScalingDuration = 0.5f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value")
+	FLinearColor timerTextColorNormal = FLinearColor::White;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value")
+	FLinearColor timerTextColorFinishSoon = FLinearColor::Red;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "300.0"))
+	float timerTextFontSizeNormal = 90.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "300.0"))
+	float timerTextFontSizeFinishSoon = 180.0f;
 
 	// ゲーム終了後の待機時間(秒).
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "60.0"))
@@ -86,7 +102,7 @@ private:
 		BeginWait,
 		ShowingDescription,
 		CountDown_3, CountDown_2, CountDown_1, CountDown_0,
-		Playing, Playing_FinishSoon,
+		Playing, Playing_FinishSoon_DoingTransition, Playing_FinishSoon,
 		EndWait,
 		ShowingResult_Begin, ShowingResult_Coin, ShowingResult_Star,
 		CountDown_BackToHome,
