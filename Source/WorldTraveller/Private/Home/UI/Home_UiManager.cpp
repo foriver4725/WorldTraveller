@@ -4,7 +4,7 @@
 #include "Components/TextBlock.h"
 #include "UiHandler.h"
 #include "Home/UI/Home_StartGameUiHandler.h"
-#include "Home/UI/Home_UiZOrders.h"
+#include "UiZOrders.h"
 #include "Enums/UiType.h"
 #include "Enums/UiDescriptionTextType.h"
 
@@ -28,7 +28,7 @@ void AHome_UiManager::BeginPlay()
 			pointer = Cast<UImage>(userWidget->GetWidgetFromName(TEXT("Pointer")));
 			descriptionText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("DescriptionText")));
 
-			userWidget->AddToViewport(FHome_UiZOrders::General);
+			userWidget->AddToViewport(FUiZOrders::Home_General);
 		}
 	}
 }

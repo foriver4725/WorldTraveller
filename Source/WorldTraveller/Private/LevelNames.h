@@ -4,9 +4,6 @@
 
 static struct FLevelNames
 {
-	static const FName Home;
-	static const FName Main;
+	static FORCEINLINE FName Home() { return TEXT("Home"); }
+	static FORCEINLINE FName Main() { return TEXT("Main"); }
 };
-
-const FName FLevelNames::Home = "Home";
-const FName FLevelNames::Main = "Main";

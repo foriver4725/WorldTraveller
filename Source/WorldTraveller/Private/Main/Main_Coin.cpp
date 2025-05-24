@@ -12,7 +12,7 @@ void AMain_Coin::BeginPlay()
 
 	staticMeshComponent = FindComponentByClass<UStaticMeshComponent>();
 	if (IsValid(staticMeshComponent))
-		staticMeshComponent->OnComponentHit.AddUniqueDynamic(this, &AMain_Coin::OnHit);
+		staticMeshComponent->OnComponentBeginOverlap.AddUniqueDynamic(this, &AMain_Coin::OnBeginOverlap);
 
 	rotateSpeed = rotateSpeedDeg * FMath::RandRange(rotateSpeedMultiplierMin, rotateSpeedMultiplierMax);
 }
@@ -28,12 +28,13 @@ void AMain_Coin::Tick(float DeltaTime)
 	staticMeshComponent->AddWorldRotation(FQuat(FVector::UpVector, FMath::DegreesToRadians(rotateSpeed) * DeltaTime));
 }
 
-void AMain_Coin::OnHit(
-	UPrimitiveComponent* HitComponent,
+void AMain_Coin::OnBeginOverlap(
+	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
-	FVector NormalImpulse,
-	const FHitResult& Hit
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult
 )
 {
 	if (!IsValid(OtherActor) || !OtherActor->IsA(APlayerCharacter::StaticClass()))

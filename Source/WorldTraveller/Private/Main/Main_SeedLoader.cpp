@@ -1,5 +1,6 @@
 ﻿#include "Main/Main_SeedLoader.h"
 #include "Kismet/GamePlayStatics.h"
+#include "Math/RandomStream.h"
 #include "PlayerCharacter.h"
 #include "Engine/DirectionalLight.h"
 #include "Components/LightComponent.h"
@@ -39,26 +40,26 @@ void AMain_SeedLoader::Setup()
 
 		// シード値を取得して乱数を初期化
 		int32 seed = gameInstance->GetSeed();
-		FMath::RandInit(seed);
+		FRandomStream rand(seed);
 
 		// 太陽設定
 		if (IsValid(sun))
 		{
 			using namespace Extensions;
 
-			float sunRotY = Remap(FMath::RandRange(0, 4), 0, 4, 0.f, -180.f);
+			float sunRotY = Remap(rand.RandRange(0, 4), 0, 4, 0.f, -180.f);
 			sun->SetActorRotation(FRotator::MakeFromEuler(FVector(0.f, sunRotY, 0.f)));
-			sun->GetLightComponent()->SetIntensity(6.f * FMath::RandRange(0.8f, 1.2f));
+			sun->GetLightComponent()->SetIntensity(6.f * rand.FRandRange(0.8f, 1.2f));
 		}
 
 		// 地形生成
 		if (IsValid(terrainGenerator))
-			terrainGenerator->GenerateRandomTerrain();
+			terrainGenerator->GenerateRandomTerrain(rand);
 
 		// ジャンプ力設定
 		TObjectPtr<APlayerCharacter> playerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 		if (IsValid(playerCharacter))
-			playerCharacter->RandomizeJumpZVelocityMultiplier();
+			playerCharacter->RandomizeJumpZVelocityMultiplier(rand);
 
 		// シード値をUIに表示
 		if (IsValid(uiManager))

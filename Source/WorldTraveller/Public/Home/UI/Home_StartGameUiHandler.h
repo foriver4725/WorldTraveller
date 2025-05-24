@@ -24,6 +24,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override final;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override final;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Property|UI")
@@ -39,8 +40,13 @@ private:
 	UPROPERTY() TObjectPtr<UButton> submitButton = nullptr;
 	UPROPERTY() TObjectPtr<UButton> closeButton = nullptr;
 
-	bool enabled = false;
+	FDelegateHandle onPlayerCancelledHandle;
+	bool enabled = true;
+	bool bFirstSetEnabled = true;
 
+	UFUNCTION() void OnSubmitButtonHovered();
 	UFUNCTION() void OnSubmitButtonClicked();
+	UFUNCTION() void OnCloseButtonHovered();
 	UFUNCTION() void OnCloseButtonClicked();
+	UFUNCTION() void OnPlayerCancelled();
 };

@@ -2,8 +2,9 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
 #include "Kismet/GameplayStatics.h"
-#include "Extensions.h"
 #include "PlayerCharacter.h"
+#include "Extensions.h"
+#include "UiZOrders.h"
 
 ALoadUiHandler::ALoadUiHandler()
 {
@@ -21,7 +22,7 @@ void ALoadUiHandler::BeginPlay()
 		{
 			panel = Cast<UImage>(userWidget->GetWidgetFromName("Panel"));
 
-			userWidget->AddToViewport(MAX_int32);
+			userWidget->AddToViewport(FUiZOrders::Load);
 		}
 	}
 
@@ -37,7 +38,14 @@ void ALoadUiHandler::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (fadeState == EFadeState::FadeIn)
+	if (fadeState == EFadeState::OnGC)
+	{
+		if (++waitForGCFrameCount >= waitForGCFrames)
+		{
+			fadeState = EFadeState::FadeIn;
+		}
+	}
+	else if (fadeState == EFadeState::FadeIn)
 	{
 		using namespace Extensions;
 
@@ -75,7 +83,9 @@ void ALoadUiHandler::Tick(float DeltaTime)
 void ALoadUiHandler::StartFadeIn()
 {
 	if (fadeState != EFadeState::Waiting) return;
-	fadeState = EFadeState::FadeIn;
+	fadeState = EFadeState::OnGC;
+
+	GEngine->ForceGarbageCollection(true);
 }
 
 void ALoadUiHandler::StartFadeOut(const FName& levelNameToOpenOnFadeOutFinished)
