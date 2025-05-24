@@ -4,8 +4,10 @@
 #include "Main/Main_Coin.h"
 #include "Main/UI/Main_InGameUiHandler.h"
 #include "LoadUiHandler.h"
+#include "SoundManager.h"
 #include "SaveGames/SaveGameManager.h"
 #include "SaveGames/ItemSaveGame.h"
+#include "Enums/SoundType.h"
 #include "Enums/SaveGameType.h"
 #include "LevelNames.h"
 #include "Extensions.h"
@@ -56,6 +58,9 @@ void AMain_GameManager::Tick(float DeltaTime)
 
 			if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
 				p->SetDescTextEnabled(true);
+
+			if (ASoundManager* soundManager = ASoundManager::Instance())
+				soundManager->Play2D(ESoundType::Main_DisplayLabel);
 		}
 	}
 	else if (state == EState::ShowingDescription)
@@ -70,6 +75,9 @@ void AMain_GameManager::Tick(float DeltaTime)
 				p->SetDescTextEnabled(false);
 				p->SetCountDownText(FText::FromString(TEXT("3")));
 			}
+
+			if (ASoundManager* soundManager = ASoundManager::Instance())
+				soundManager->Play2D(ESoundType::Main_CountDown);
 		}
 	}
 	else if (state == EState::CountDown_3)
@@ -81,6 +89,9 @@ void AMain_GameManager::Tick(float DeltaTime)
 
 			if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
 				p->SetCountDownText(FText::FromString(TEXT("2")));
+
+			if (ASoundManager* soundManager = ASoundManager::Instance())
+				soundManager->Play2D(ESoundType::Main_CountDown);
 		}
 	}
 	else if (state == EState::CountDown_2)
@@ -92,6 +103,9 @@ void AMain_GameManager::Tick(float DeltaTime)
 
 			if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
 				p->SetCountDownText(FText::FromString(TEXT("1")));
+
+			if (ASoundManager* soundManager = ASoundManager::Instance())
+				soundManager->Play2D(ESoundType::Main_CountDown);
 		}
 	}
 	else if (state == EState::CountDown_1)
@@ -114,6 +128,9 @@ void AMain_GameManager::Tick(float DeltaTime)
 
 			if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
 				p->SetCountDownText(FText::GetEmpty());
+
+			if (ASoundManager* soundManager = ASoundManager::Instance())
+				soundManager->Play2D(ESoundType::Main_Bgm);
 		}
 	}
 	else if (state == EState::Playing)
@@ -124,6 +141,9 @@ void AMain_GameManager::Tick(float DeltaTime)
 
 			if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
 				p->SetTimerTextColor(timerTextColorFinishSoon);
+
+			if (ASoundManager* soundManager = ASoundManager::Instance())
+				soundManager->Play2D(ESoundType::Main_FinishSoon);
 		}
 
 		if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
@@ -168,6 +188,9 @@ void AMain_GameManager::Tick(float DeltaTime)
 
 			if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
 				p->SetEndTextEnabled(true);
+
+			if (ASoundManager* soundManager = ASoundManager::Instance())
+				soundManager->Play2D(ESoundType::Main_GameEnded);
 		}
 
 		if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
@@ -185,6 +208,9 @@ void AMain_GameManager::Tick(float DeltaTime)
 				p->SetEndTextEnabled(false);
 				p->SetResultCanvasEnabled(true);
 			}
+
+			if (ASoundManager* soundManager = ASoundManager::Instance())
+				soundManager->Play2D(ESoundType::Main_UpdateResult);
 		}
 	}
 	else if (state == EState::ShowingResult_Begin)
@@ -196,6 +222,9 @@ void AMain_GameManager::Tick(float DeltaTime)
 
 			if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
 				p->SetResultCoinText(coinAmount);
+
+			if (ASoundManager* soundManager = ASoundManager::Instance())
+				soundManager->Play2D(ESoundType::Main_UpdateResult);
 		}
 	}
 	else if (state == EState::ShowingResult_Coin)
@@ -207,6 +236,9 @@ void AMain_GameManager::Tick(float DeltaTime)
 
 			if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
 				p->SetResultStarText(starAmount);
+
+			if (ASoundManager* soundManager = ASoundManager::Instance())
+				soundManager->Play2D(ESoundType::Main_UpdateResult);
 		}
 	}
 	else if (state == EState::ShowingResult_Star)
@@ -266,6 +298,9 @@ void AMain_GameManager::OnPlayerGetCoin()
 	++coinAmount;
 	if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
 		p->SetCoinAmountText(coinAmount);
+
+	if (ASoundManager* soundManager = ASoundManager::Instance())
+		soundManager->Play2D(ESoundType::Main_ObtainedCoin);
 }
 
 constexpr uint32 AMain_GameManager::CalcStarFromCoin(uint32 coin)

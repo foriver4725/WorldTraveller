@@ -19,6 +19,7 @@ void ASoundManager::BeginPlay()
 
 void ASoundManager::Play2D(ESoundType type) const
 {
-	if (USoundBase* sound = sounds[type])
-		UGameplayStatics::PlaySound2D(GetWorld(), sound);
+	if (const TObjectPtr<USoundBase>* soundPtr = sounds.Find(type))
+		if (USoundBase* sound = *soundPtr)
+			UGameplayStatics::PlaySound2D(GetWorld(), sound);
 }
