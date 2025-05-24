@@ -5,9 +5,10 @@
 #include "Main_GameManager.generated.h"
 
 class UTextBlock;
-class UWidget;
-class AMain_Coin;
+class UCanvasPanel;
 class APlayerCharacter;
+class AMain_Coin;
+class AMain_InGameUiHandler;
 class ALoadUiHandler;
 
 UCLASS()
@@ -26,8 +27,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Dependency")
 	TSubclassOf<AMain_Coin> coinOriginal;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Property|UI")
-	TSubclassOf<UUserWidget> inGameWidgetClass;
+	UPROPERTY(EditInstanceOnly, Category = "Property|Dependency")
+	TObjectPtr<AMain_InGameUiHandler> inGameUiHandler;
+
+	UPROPERTY(EditInstanceOnly, Category = "Property|Dependency")
+	TObjectPtr<ALoadUiHandler> loadUiHandler;
 
 	// ゲーム開始前の待機時間(秒).
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "60.0"))
@@ -73,9 +77,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.1", ClampMax = "1000.0"))
 	float spawnHeight = 300.0f;
 
-	UPROPERTY(EditInstanceOnly, Category = "Property|Dependency")
-	TObjectPtr<ALoadUiHandler> loadUiHandler;
-
 	enum class EState : uint8
 	{
 		BeginWait,
@@ -88,17 +89,9 @@ private:
 		Void,  // ステートの終着点.
 	};
 
-	UPROPERTY() TObjectPtr<UTextBlock> timerText = nullptr;
-	UPROPERTY() TObjectPtr<UTextBlock> coinAmountText = nullptr;
-	UPROPERTY() TObjectPtr<UTextBlock> descText = nullptr;
-	UPROPERTY() TObjectPtr<UTextBlock> countDownText = nullptr;
-	UPROPERTY() TObjectPtr<UTextBlock> endText = nullptr;
-	UPROPERTY() TObjectPtr<UWidget> resultCanvas = nullptr;
-	UPROPERTY() TObjectPtr<UTextBlock> resultCoinText = nullptr;
-	UPROPERTY() TObjectPtr<UTextBlock> resultStarText = nullptr;
-	UPROPERTY() TObjectPtr<UTextBlock> resultCountDownText = nullptr;
 	UPROPERTY() TObjectPtr<APlayerCharacter> playerCharacter = nullptr;  // プレイヤーの座標をもらうため.
 
+	bool bFirstTick = true;  // 初回のTickかどうか.
 	EState state = EState::BeginWait;
 	float coinGenerateTime = 0;
 	float gameTime = 0;  // ステート遷移で使う、汎用カウンタ.
@@ -106,16 +99,6 @@ private:
 	uint32 starAmount = 0;  // プレイヤーが獲得したスターの数.
 
 	void GenerateNewCoin();
-	void SetTimerText(float remainTime);
-	void SetCoinAmountText(int amount);
-	void SetDescTextEnabled(bool bEnabled);
-	void SetCountDownText(const FText& text);
-	void SetEndTextEnabled(bool bEnabled);
-	void SetResultCanvasEnabled(bool bEnabled);
-	void SetResultCoinText(int amount);  // if -1, only shows "Coin : ".
-	void SetResultStarText(int amount);  // if -1, only shows "Star : ".
-	void SetResultCountDownTextEnabled(bool bEnabled);
-	void SetResultCountDownText(float remainTime);
 
 	constexpr uint32 CalcStarFromCoin(uint32 coin);
 
