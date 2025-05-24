@@ -37,7 +37,14 @@ void ALoadUiHandler::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (fadeState == EFadeState::FadeIn)
+	if (fadeState == EFadeState::OnGC)
+	{
+		if (++waitForGCFrameCount >= waitForGCFrames)
+		{
+			fadeState = EFadeState::FadeIn;
+		}
+	}
+	else if (fadeState == EFadeState::FadeIn)
 	{
 		using namespace Extensions;
 
@@ -75,7 +82,9 @@ void ALoadUiHandler::Tick(float DeltaTime)
 void ALoadUiHandler::StartFadeIn()
 {
 	if (fadeState != EFadeState::Waiting) return;
-	fadeState = EFadeState::FadeIn;
+	fadeState = EFadeState::OnGC;
+
+	GEngine->ForceGarbageCollection(true);
 }
 
 void ALoadUiHandler::StartFadeOut(const FName& levelNameToOpenOnFadeOutFinished)

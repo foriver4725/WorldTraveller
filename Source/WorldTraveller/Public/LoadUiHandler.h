@@ -33,6 +33,7 @@ private:
 	enum class EFadeState : uint8
 	{
 		Waiting,
+		OnGC,
 		FadeIn,
 		InGame,
 		FadeOut,
@@ -48,6 +49,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "10.0"))
 	float fadeOutDuration = 1.0f;
 
+	// ガベージコレクションをInvokeさせた後、若干待機するフレーム数.
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "1", ClampMax = "10"))
+	int waitForGCFrames = 3;
+
 	void SetUiTransparency(float alpha);
 
 	UPROPERTY() TObjectPtr<APlayerCharacter> playerCharacter = nullptr;
@@ -57,6 +62,7 @@ private:
 	EFadeState fadeState = EFadeState::Waiting;
 	float fadeTime = 0.0f;
 	FName openingLevelName = NAME_None;
+	int waitForGCFrameCount = 0;
 
 	bool enabled = false;
 };
