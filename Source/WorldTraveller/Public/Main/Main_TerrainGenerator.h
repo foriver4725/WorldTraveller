@@ -5,6 +5,7 @@
 #include "Main_TerrainGenerator.generated.h"
 
 class UProceduralMeshComponent;
+struct FRandomStream;
 
 UCLASS()
 class WORLDTRAVELLER_API AMain_TerrainGenerator final : public AActor
@@ -14,7 +15,7 @@ class WORLDTRAVELLER_API AMain_TerrainGenerator final : public AActor
 public:
 	AMain_TerrainGenerator();
 
-	void GenerateRandomTerrain();
+	void GenerateRandomTerrain(const FRandomStream& rand);
 
 private:
 	UPROPERTY(EditInstanceOnly, Category = "Property|Data")

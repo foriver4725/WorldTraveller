@@ -1,6 +1,7 @@
 ﻿#include "Main/Main_TerrainGenerator.h"
 #include "ProceduralMeshComponent.h"
 #include "Math/UnrealMathUtility.h"
+#include "Math/RandomStream.h"
 #include "WorldTravellerGameInstance.h"
 
 AMain_TerrainGenerator::AMain_TerrainGenerator()
@@ -9,14 +10,15 @@ AMain_TerrainGenerator::AMain_TerrainGenerator()
 	SetRootComponent(mesh);
 }
 
-void AMain_TerrainGenerator::GenerateRandomTerrain()
+void AMain_TerrainGenerator::GenerateRandomTerrain(const FRandomStream& rand)
 {
 	if (hasGeneratedMesh) return;
 	hasGeneratedMesh |= true;
 
 	// パラメータの計算
 	const uint16 Width = noiseSize, Height = noiseSize;
-	const int32 StartX = FMath::Rand32() >> 2, StartY = FMath::Rand32() >> 2; // ランダムな開始位置 (オーバーフロー防止で、2bit分猶予を持たせる)
+	// ランダムな開始位置 (オーバーフロー防止で、2bit分猶予を持たせる)
+	const int32 StartX = rand.RandRange(0, MAX_int32 >> 2), StartY = rand.RandRange(0, MAX_int32 >> 2);
 	const int32 EndX = StartX + Width - 1, EndY = StartY + Height - 1;
 
 	// 高さマップ生成（2Dパーリンノイズ）
@@ -28,8 +30,8 @@ void AMain_TerrainGenerator::GenerateRandomTerrain()
 		Row.Reserve(Width);
 		for (int32 X = StartX; X <= EndX; ++X)
 		{
-			float NoiseFreqScale = FMath::RandRange(noiseFreqScaleMin, noiseFreqScaleMax); // ノイズの周波数スケールをランダムに設定
-			float NoiseHeightScale = FMath::RandRange(noiseHeightScaleMin, noiseHeightScaleMax); // ノイズの高さスケールをランダムに設定
+			float NoiseFreqScale = rand.FRandRange(noiseFreqScaleMin, noiseFreqScaleMax); // ノイズの周波数スケールをランダムに設定
+			float NoiseHeightScale = rand.FRandRange(noiseHeightScaleMin, noiseHeightScaleMax); // ノイズの高さスケールをランダムに設定
 			float NoiseValue = FMath::PerlinNoise2D(FVector2D(X, Y) * NoiseFreqScale);
 			Row.Add(NoiseValue * NoiseHeightScale); // スケーリングして高さを増幅
 		}
@@ -114,7 +116,7 @@ void AMain_TerrainGenerator::GenerateRandomTerrain()
 	// マテリアル設定
 	if (materials.Num() > 0)
 	{
-		const TObjectPtr<UMaterial> material = materials[FMath::RandRange(0, materials.Num() - 1)];
+		const TObjectPtr<UMaterial> material = materials[rand.RandRange(0, materials.Num() - 1)];
 		if (IsValid(material))
 			mesh->SetMaterial(0, material);
 	}

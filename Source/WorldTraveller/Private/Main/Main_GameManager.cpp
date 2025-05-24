@@ -292,7 +292,11 @@ void AMain_GameManager::GenerateNewCoin()
 
 void AMain_GameManager::OnPlayerGetCoin()
 {
-	if (state != EState::Playing) return;
+	if (!(
+		state == EState::Playing ||
+		state == EState::Playing_FinishSoon_DoingTransition ||
+		state == EState::Playing_FinishSoon))
+		return;
 
 	++coinAmount;
 	if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))

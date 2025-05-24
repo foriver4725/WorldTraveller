@@ -9,6 +9,7 @@ class UInputComponent;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+struct FRandomStream;
 class AHome_StartGameUiHandler;
 
 DECLARE_MULTICAST_DELEGATE(FOnPlayerCancelled);
@@ -21,7 +22,7 @@ class WORLDTRAVELLER_API APlayerCharacter final : public ACharacter
 public:
 	APlayerCharacter();
 
-	void RandomizeJumpZVelocityMultiplier();
+	void RandomizeJumpZVelocityMultiplier(const FRandomStream& rand);
 	void SetInputEnabled(bool bEnabled);
 
 	FOnPlayerCancelled OnPlayerCancelled;
