@@ -67,7 +67,7 @@ void AHome_StartGameUiHandler::OnSubmitButtonClicked()
 	if (TObjectPtr<UWorldTravellerGameInstance> gameInstance = Cast<UWorldTravellerGameInstance>(GetGameInstance()))
 	{
 		if (IsValid(gameInstance))
-			gameInstance->SetSeed(FMath::Rand());
+			gameInstance->SetSeed(FMath::Rand32());
 	}
 
 	SetUiEnabled(false);
