@@ -20,6 +20,7 @@ public:
 	virtual void SetUiEnabled(bool bEnabled) override final;
 
 	void SetTimerText(float remainTime);
+	void SetTimerTextAppearance(bool bFinishSoon);
 	void SetCoinAmountText(int amount);
 	void SetDescTextEnabled(bool bEnabled);
 	void SetCountDownText(const FText& text);

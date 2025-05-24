@@ -49,6 +49,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "1.0", ClampMax = "300.0"))
 	float gameLimitTime = 30.0f;
 
+	// ゲームの残り時間が少なくなったときの警告時間(秒).
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "30.0"))
+	float finishSoonTime = 5.0f;
+
 	// ゲーム終了後の待機時間(秒).
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "60.0"))
 	float endWaitTime = 2.0f;
@@ -82,7 +86,7 @@ private:
 		BeginWait,
 		ShowingDescription,
 		CountDown_3, CountDown_2, CountDown_1, CountDown_0,
-		Playing,
+		Playing, Playing_FinishSoon,
 		EndWait,
 		ShowingResult_Begin, ShowingResult_Coin, ShowingResult_Star,
 		CountDown_BackToHome,

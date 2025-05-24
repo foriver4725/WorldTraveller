@@ -55,6 +55,18 @@ void AMain_InGameUiHandler::SetTimerText(float remainTime)
 	timerText->SetText(FText::FromString(FString::Printf(TEXT("%02d:%02d"), minutes, seconds)));
 }
 
+void AMain_InGameUiHandler::SetTimerTextAppearance(bool bFinishSoon)
+{
+	if (UTextBlock* p = GetValid(timerText))
+	{
+		p->SetColorAndOpacity(bFinishSoon ? FLinearColor::Red : FLinearColor::White);
+
+		FSlateFontInfo fontInfo = p->Font;
+		fontInfo.Size = bFinishSoon ? 180 : 90;
+		p->SetFont(fontInfo);
+	}
+}
+
 void AMain_InGameUiHandler::SetCoinAmountText(int amount)
 {
 	if (!IsValid(coinAmountText)) return;

@@ -32,6 +32,7 @@ void AMain_GameManager::Tick(float DeltaTime)
 		if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
 		{
 			p->SetTimerText(gameLimitTime);
+			p->SetTimerTextAppearance(false);
 			p->SetCoinAmountText(0);
 			p->SetDescTextEnabled(false);
 			p->SetCountDownText(FText::GetEmpty());
@@ -115,6 +116,19 @@ void AMain_GameManager::Tick(float DeltaTime)
 	}
 	else if (state == EState::Playing)
 	{
+		if ((gameTime -= DeltaTime) <= finishSoonTime)
+		{
+			state = EState::Playing_FinishSoon;
+
+			if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
+				p->SetTimerTextAppearance(true);
+		}
+
+		if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
+			p->SetTimerText(gameTime);
+	}
+	else if (state == EState::Playing_FinishSoon)
+	{
 		if ((gameTime -= DeltaTime) <= 0)
 		{
 			gameTime = 0;
@@ -127,16 +141,11 @@ void AMain_GameManager::Tick(float DeltaTime)
 					itemSaveGame->AddStarAmount(starAmount);
 
 			if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
-			{
-				p->SetTimerText(0);
 				p->SetEndTextEnabled(true);
-			}
 		}
-		else
-		{
-			if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
-				p->SetTimerText(gameTime);
-		}
+
+		if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
+			p->SetTimerText(gameTime);
 	}
 	else if (state == EState::EndWait)
 	{
