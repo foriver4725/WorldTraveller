@@ -49,7 +49,7 @@ void AHome_UiManager::SetPointerActivation(bool bActivate)
 void AHome_UiManager::SetDescriptionText(DescTextType textType)
 {
 	static const FText NoneText = FText::GetEmpty();
-	static const FText CanClickText = FText::FromString(TEXT("Click or A"));
+	static const FText CanClickText = FText::FromString(TEXT("Interact"));
 
 	if (currentDescriptionText == textType)
 		return;
