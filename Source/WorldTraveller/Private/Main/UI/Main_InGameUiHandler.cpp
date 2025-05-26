@@ -66,7 +66,7 @@ void AMain_InGameUiHandler::SetTimerTextFontSize(float size)
 {
 	if (UTextBlock* p = GetValid(timerText))
 	{
-		FSlateFontInfo fontInfo = p->Font;
+		FSlateFontInfo fontInfo = p->GetFont();
 		fontInfo.Size = size;
 		p->SetFont(fontInfo);
 	}
