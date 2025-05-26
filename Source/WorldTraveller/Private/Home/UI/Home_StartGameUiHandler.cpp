@@ -11,7 +11,9 @@
 #include "LevelNames.h"
 #include "WorldTravellerGameInstance.h"
 
-constexpr bool IsOnlyDigits(const TCHAR* str);
+static FText ValidateEigenvalueText(const FText& text);
+static int32 GetEigenvalueFromText(const FText& text);
+static constexpr bool IsOnlyDigits(const TCHAR* str);
 
 AHome_StartGameUiHandler::AHome_StartGameUiHandler()
 {
@@ -97,10 +99,15 @@ void AHome_StartGameUiHandler::OnSubmitButtonClicked(EInGameType type)
 		if (ASoundManager* soundManager = ASoundManager::Instance())
 			soundManager->Play2D(ESoundType::General_ButtonClicked);
 
-		if (TObjectPtr<UWorldTravellerGameInstance> gameInstance = Cast<UWorldTravellerGameInstance>(GetGameInstance()))
+		if (UEditableTextBox* textBox = GetValid(eigenvalueText))
 		{
-			if (IsValid(gameInstance))
-				gameInstance->SetSeed(FMath::Rand32());
+			using GI = UWorldTravellerGameInstance;
+
+			int32 eigenvalue = GetEigenvalueFromText(textBox->GetText());
+			if (eigenvalue == -1) eigenvalue = FMath::Rand32();
+
+			if (GI* gi = GetValid(Cast<GI>(GetGameInstance())))
+				gi->SetSeed(eigenvalue);
 		}
 
 		SetUiEnabled(false);
@@ -112,35 +119,10 @@ void AHome_StartGameUiHandler::OnSubmitButtonClicked(EInGameType type)
 
 void AHome_StartGameUiHandler::OnEigenvalueTextChanged(const FText& text)
 {
+	FText validatedText = ValidateEigenvalueText(text);
+
 	if (UEditableTextBox* textBox = GetValid(eigenvalueText))
-	{
-		FString text = textBox->GetText().ToString();
-
-		// 入力が空文字列の場合は何もしない.
-		if (text.Len() <= 0) return;
-
-		// 入力が数字以外の文字列の場合は、空文字列にする.
-		if (!IsOnlyDigits(*text))
-		{
-			textBox->SetText(FText::GetEmpty());
-			return;
-		}
-
-		// 0 <= eigenvalue <= MAX_int32 のため、最大値は 10桁.
-		if (text.Len() >= 11)
-		{
-			// 11桁以上の数字をトリムする.
-			text = text.Left(10);
-			textBox->SetText(FText::FromString(text));
-		}
-
-		// eigenvalueの値を、適切な範囲に制限する.
-		int64 eigenvalueInt64 = FCString::Atoi64(*text);
-		eigenvalueInt64 = FMath::Clamp(eigenvalueInt64, StaticCast<int64>(0), StaticCast<int64>(MAX_int32));
-		int32 eigenvalue = StaticCast<int32>(eigenvalueInt64);
-		text = FString::Printf(TEXT("%d"), eigenvalue);
-		textBox->SetText(FText::FromString(text));
-	}
+		textBox->SetText(validatedText);
 }
 
 void AHome_StartGameUiHandler::OnPlayerCancelled()
@@ -175,6 +157,46 @@ void AHome_StartGameUiHandler::SetUiEnabled(bool bEnabled)
 
 	if (IsValid(cursorManager))
 		cursorManager->SetCursorEnabled(enabled);
+}
+
+// eigenvalueText の入力値を検証し、適切な文字列に変換する.
+FText ValidateEigenvalueText(const FText& text)
+{
+	FString str = text.ToString();
+
+	if (str.Len() <= 0) return FText::GetEmpty();  // 入力が空文字列.
+	if (!IsOnlyDigits(*str)) return FText::GetEmpty();  // 入力が数字以外の文字列.
+
+	// 0 <= eigenvalue <= MAX_int32 のため、最大値は 10桁.
+	// 11桁以上の数字をトリムする.
+	if (str.Len() >= 11)
+		str = str.Left(10);
+
+	// eigenvalueの値を、適切な範囲に制限する.
+	int64 eigenvalueInt64 = FCString::Atoi64(*str);
+	int32 eigenvalue = StaticCast<int32>(FMath::Clamp(eigenvalueInt64, StaticCast<int64>(0), StaticCast<int64>(MAX_int32)));
+
+	return FText::FromString(FString::Printf(TEXT("%d"), eigenvalue));
+}
+
+// text から eigenvalue に変換 (無効なら -1 を返し、ランダムの合図とする).
+int32 GetEigenvalueFromText(const FText& text)
+{
+	FString str = text.ToString();
+
+	if (str.Len() <= 0) return -1;  // 文字があるか?
+	if (!IsOnlyDigits(*str)) return -1;  // 数字のみか?
+	if (str.Len() >= 11) return -1;  // 高々 10 桁か?
+
+	// この時点で一旦数字に変換.
+	int64 eigenvalueInt64 = FCString::Atoi64(*str);
+
+	// 0 <= eigenvalue <= MAX_int32 であるか?
+	if (eigenvalueInt64 < 0) return -1;
+	if (eigenvalueInt64 > MAX_int32) return -1;
+
+	int32 eigenvalue = StaticCast<int32>(eigenvalueInt64);
+	return eigenvalue;
 }
 
 constexpr bool IsOnlyDigits(const TCHAR* str)
