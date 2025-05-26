@@ -27,6 +27,7 @@ void AHome_UiManager::BeginPlay()
 		{
 			pointer = Cast<UImage>(userWidget->GetWidgetFromName(TEXT("Pointer")));
 			descriptionText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("DescriptionText")));
+			starAmountText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("StarAmountText")));
 
 			userWidget->AddToViewport(FUiZOrders::Home_General);
 		}

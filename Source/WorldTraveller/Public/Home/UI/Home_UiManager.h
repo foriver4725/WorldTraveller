@@ -43,6 +43,7 @@ private:
 	UPROPERTY() TObjectPtr<UUserWidget> userWidget = nullptr;
 	UPROPERTY() TObjectPtr<UImage> pointer = nullptr;
 	UPROPERTY() TObjectPtr<UTextBlock> descriptionText = nullptr;
+	UPROPERTY() TObjectPtr<UTextBlock> starAmountText = nullptr;
 
 	bool bIsPointerActive = false;
 	EUiDescriptionTextType currentDescriptionText;
