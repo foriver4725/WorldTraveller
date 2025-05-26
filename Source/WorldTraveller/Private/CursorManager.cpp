@@ -20,7 +20,7 @@ void ACursorManager::SetCursorEnabled(bool bEnabled)
 	if (bEnabled)
 	{
 		playerController->SetShowMouseCursor(true);
-		playerController->SetInputMode(FInputModeUIOnly());
+		playerController->SetInputMode(FInputModeGameAndUI());
 
 		int32 width, height;
 		playerController->GetViewportSize(width, height);

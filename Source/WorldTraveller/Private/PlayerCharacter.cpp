@@ -56,7 +56,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	if (TObjectPtr<UEnhancedInputComponent> inputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		inputComponent->BindAction(submitAction, ETriggerEvent::Started, this, &APlayerCharacter::OnSubmit);
+		inputComponent->BindAction(interactAction, ETriggerEvent::Started, this, &APlayerCharacter::OnInteract);
 		inputComponent->BindAction(cancelAction, ETriggerEvent::Started, this, &APlayerCharacter::OnCancel);
 		inputComponent->BindAction(jumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		inputComponent->BindAction(jumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
@@ -75,7 +75,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	SetDispCanClick(bClickable);
 }
 
-void APlayerCharacter::OnSubmit()
+void APlayerCharacter::OnInteract()
 {
 	static const FName Home_PedestalTag = TEXT("Pedestal");
 

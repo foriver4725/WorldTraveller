@@ -2,6 +2,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Components/CanvasPanel.h"
 #include "UiHandler.h"
 #include "Home/UI/Home_StartGameUiHandler.h"
 #include "UiZOrders.h"
@@ -27,6 +28,11 @@ void AHome_UiManager::BeginPlay()
 		{
 			pointer = Cast<UImage>(userWidget->GetWidgetFromName(TEXT("Pointer")));
 			descriptionText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("DescriptionText")));
+			starAmountPanel = Cast<UCanvasPanel>(userWidget->GetWidgetFromName(TEXT("StarAmount")));
+			starAmountText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("StarAmountText")));
+
+			this->SetStarAmountUiEnabled(false);
+			this->SetStarAmountText(0);
 
 			userWidget->AddToViewport(FUiZOrders::Home_General);
 		}
@@ -49,7 +55,7 @@ void AHome_UiManager::SetPointerActivation(bool bActivate)
 void AHome_UiManager::SetDescriptionText(DescTextType textType)
 {
 	static const FText NoneText = FText::GetEmpty();
-	static const FText CanClickText = FText::FromString(TEXT("Click or A"));
+	static const FText CanClickText = FText::FromString(TEXT("Interact"));
 
 	if (currentDescriptionText == textType)
 		return;
@@ -87,4 +93,19 @@ void AHome_UiManager::SetUiEnabled(UiType type, bool bEnabled)
 
 	if (IUiHandler* uiHandler = Cast<IUiHandler>(uiHandlerActor))
 		uiHandler->SetUiEnabled(bEnabled);
+}
+
+void AHome_UiManager::SetStarAmountUiEnabled(bool bEnabled)
+{
+	if (UWidget* p = GetValid(Cast<UWidget>(starAmountPanel)))
+	{
+		p->SetIsEnabled(bEnabled);
+		p->SetVisibility(bEnabled ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	}
+}
+
+void AHome_UiManager::SetStarAmountText(uint64 starAmount)
+{
+	if (UTextBlock* p = GetValid(starAmountText))
+		p->SetText(FText::FromString(FString::Printf(TEXT(" x %llu"), starAmount)));
 }

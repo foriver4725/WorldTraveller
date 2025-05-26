@@ -2,12 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "SaveGames/ProgSaveGame.h"
+#include "SaveGames/ItemSaveGame.h"
+#include "Enums/SaveGameType.h"
 #include "SaveGameManager.generated.h"
-
-enum class ESaveGameType : uint8;
-class USaveGame;
-class UProgSaveGame;
-class UItemSaveGame;
 
 UCLASS()
 class WORLDTRAVELLER_API ASaveGameManager final : public AActor

@@ -1,8 +1,5 @@
 ﻿#include "SaveGames/SaveGameManager.h"
 #include "Kismet/GameplayStatics.h"
-#include "Enums/SaveGameType.h"
-#include "SaveGames/ProgSaveGame.h"
-#include "SaveGames/ItemSaveGame.h"
 
 static USaveGame* Create(ESaveGameType type);
 static FName GetSlotName(ESaveGameType type);

@@ -38,7 +38,7 @@ private:
 	TObjectPtr<UInputMappingContext> mappingContext;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
-	TObjectPtr<UInputAction> submitAction;
+	TObjectPtr<UInputAction> interactAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
 	TObjectPtr<UInputAction> cancelAction;
@@ -80,7 +80,7 @@ private:
 	bool bClickable = false;
 	FName clickableTag = "";
 
-	void OnSubmit();
+	void OnInteract();
 	void OnCancel();
 	void Move(const FInputActionValue& value);
 	void Look(const FInputActionValue& value);
