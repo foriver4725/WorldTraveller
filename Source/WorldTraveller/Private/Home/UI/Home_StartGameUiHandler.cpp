@@ -1,10 +1,12 @@
 ﻿#include "Home/UI/Home_StartGameUiHandler.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/CanvasPanel.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/EditableTextBox.h"
 #include "Kismet/GameplayStatics.h"
+#include "InputManager.h"
 #include "CursorManager.h"
 #include "LoadUiHandler.h"
 #include "SoundManager.h"
@@ -12,6 +14,9 @@
 #include "UiZOrders.h"
 #include "LevelNames.h"
 #include "WorldTravellerGameInstance.h"
+#if WITH_EDITOR
+#include "Editor/EditorEngine.h"
+#endif
 
 static FText ValidateEigenvalueText(const FText& text);
 static int32 GetEigenvalueFromText(const FText& text);
@@ -19,6 +24,8 @@ static constexpr bool IsOnlyDigits(const TCHAR* str);
 
 AHome_StartGameUiHandler::AHome_StartGameUiHandler()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bTickEvenWhenPaused = true;
 }
 
 void AHome_StartGameUiHandler::BeginPlay()
@@ -27,10 +34,9 @@ void AHome_StartGameUiHandler::BeginPlay()
 
 	if (IsValid(widgetClass))
 	{
-		userWidget = CreateWidget<UUserWidget>(GetWorld(), widgetClass);
-		if (IsValid(userWidget))
+		if (userWidget = CreateWidget<UUserWidget>(GetWorld(), widgetClass))
 		{
-			SetUiEnabled(false);
+			containerCanvas = Cast<UCanvasPanel>(userWidget->GetWidgetFromName(TEXT("Container")));
 
 			if (closeButton = Cast<UButton>(userWidget->GetWidgetFromName(TEXT("CloseButton"))))
 			{
@@ -61,7 +67,7 @@ void AHome_StartGameUiHandler::BeginPlay()
 				Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("SubmitLabel_CoinCollection"))))
 			{
 				submitButtonTexts.Add(EInGameType::CoinCollection, submitButtonText_CoinCollection);
-				initSubmitButtonTextFontSizes.Add(EInGameType::CoinCollection, submitButtonText_CoinCollection->Font.Size);
+				initSubmitButtonTextFontSizes.Add(EInGameType::CoinCollection, submitButtonText_CoinCollection->GetFont().Size);
 			}
 
 			if (eigenvalueText = Cast<UEditableTextBox>(userWidget->GetWidgetFromName(TEXT("EigenvalueText"))))
@@ -69,24 +75,101 @@ void AHome_StartGameUiHandler::BeginPlay()
 				eigenvalueText->OnTextChanged.AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnEigenvalueTextChanged);
 			}
 
+			quitText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("QuitText")));
+
+			{
+				this->SetUiEnabled(false);
+				this->SetQuitTextEnabled(false);
+				this->SetQuitText(0);
+			}
+
 			userWidget->AddToViewport(FUiZOrders::Home_StartGame);
 		}
 	}
 
-	if (APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-		onPlayerCancelledHandle = playerCharacter->OnPlayerCancelled.AddUObject(this, &AHome_StartGameUiHandler::OnPlayerCancelled);
+	quitTime = quitTimeThreshold;
+}
+
+void AHome_StartGameUiHandler::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	this->CheckEscape(DeltaTime);
 }
 
 void AHome_StartGameUiHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	if (APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-		playerCharacter->OnPlayerCancelled.Remove(onPlayerCancelledHandle);
-
 	submitButtons.Empty();
 	submitButtonTexts.Empty();
 	initSubmitButtonTextFontSizes.Empty();
+}
+
+// 難解すぎるので、後ほどリファクタ必要かも.
+// そもそもエスケープのチェックとか、このクラスでするべきか?
+void AHome_StartGameUiHandler::CheckEscape(float DeltaTime)
+{
+	// キャストコストがあるので、最初に取得.
+	if (AInputManager* inputManager = AInputManager::Instance())
+	{
+		if (GetUiEnabled())
+		{
+			// ちょっとオーバーヘッドがあるけど、妥協する.
+			bJustNextFrameAfterUiDisabled = false;
+			bDoingQuit = false;
+			quitTime = quitTimeThreshold;
+			SetQuitTextEnabled(false);
+
+			if (inputManager->GetCancelPressed() || inputManager->GetEscapePressed())
+			{
+				bJustNextFrameAfterUiDisabled = true;
+				SetUiEnabled(false);
+				return;
+			}
+		}
+		else
+		{
+			if (bJustNextFrameAfterUiDisabled)
+			{
+				bJustNextFrameAfterUiDisabled = false;
+				return;  // このフレームは何もしない.
+			}
+
+			if (bDoingQuit)
+			{
+				if (inputManager->GetEscapeReleased())
+				{
+					bDoingQuit = false;
+					SetQuitTextEnabled(false);
+				}
+				else
+				{
+					if ((quitTime -= DeltaTime) <= 0)
+					{
+						this->QuitGame();
+						return;
+					}
+					else
+						SetQuitText(quitTime);
+				}
+			}
+			else
+			{
+				if (inputManager->GetEscapePressed())
+				{
+					bDoingQuit = true;
+					SetQuitTextEnabled(true);
+				}
+				else
+				{
+					// ちょっとオーバーヘッドがあるけど、妥協する.
+					quitTime = quitTimeThreshold;
+					SetQuitTextEnabled(false);
+				}
+			}
+		}
+	}
 }
 
 void AHome_StartGameUiHandler::OnCloseButtonHovered()
@@ -129,7 +212,7 @@ void AHome_StartGameUiHandler::OnSubmitButtonHovered(EInGameType type)
 
 		if (UTextBlock* p = GetValid(submitButtonTexts.FindRef(EInGameType::CoinCollection, nullptr)))
 		{
-			FSlateFontInfo font = p->Font;
+			FSlateFontInfo font = p->GetFont();
 			font.Size *= sizeMultiplierOnHovered;
 			p->SetFont(font);
 		}
@@ -142,7 +225,7 @@ void AHome_StartGameUiHandler::OnSubmitButtonUnhovered(EInGameType type)
 	{
 		if (UTextBlock* p = GetValid(submitButtonTexts.FindRef(EInGameType::CoinCollection, nullptr)))
 		{
-			FSlateFontInfo font = p->Font;
+			FSlateFontInfo font = p->GetFont();
 			font.Size = initSubmitButtonTextFontSizes.FindRef(EInGameType::CoinCollection, 0);
 			p->SetFont(font);
 		}
@@ -182,11 +265,6 @@ void AHome_StartGameUiHandler::OnEigenvalueTextChanged(const FText& text)
 		textBox->SetText(validatedText);
 }
 
-void AHome_StartGameUiHandler::OnPlayerCancelled()
-{
-	SetUiEnabled(false);
-}
-
 bool AHome_StartGameUiHandler::GetUiEnabled() const
 {
 	return enabled;
@@ -206,14 +284,41 @@ void AHome_StartGameUiHandler::SetUiEnabled(bool bEnabled)
 
 	UGameplayStatics::SetGamePaused(GetWorld(), enabled);
 
-	if (IsValid(userWidget))
+	if (UCanvasPanel* p = GetValid(containerCanvas))
 	{
-		userWidget->SetIsEnabled(enabled);
-		userWidget->SetVisibility(enabled ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+		p->SetIsEnabled(enabled);
+		p->SetVisibility(enabled ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 	}
 
 	if (IsValid(cursorManager))
 		cursorManager->SetCursorEnabled(enabled);
+}
+
+void AHome_StartGameUiHandler::SetQuitTextEnabled(bool bEnabled)
+{
+	if (UTextBlock* p = GetValid(quitText))
+	{
+		p->SetIsEnabled(bEnabled);
+		p->SetVisibility(bEnabled ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	}
+}
+
+void AHome_StartGameUiHandler::SetQuitText(float remainTime)
+{
+	if (UTextBlock* p = GetValid(quitText))
+	{
+		FString text = FString::Printf(TEXT("Quit the game in %d sec ..."), FMath::FloorToInt(remainTime));
+		p->SetText(FText::FromString(text));
+	}
+}
+
+void AHome_StartGameUiHandler::QuitGame()
+{
+#if WITH_EDITOR
+	if (GEditor) GEditor->RequestEndPlayMap();
+#else
+	UKismetSystemLibrary::QuitGame(this, nullptr, EQuitPreference::Quit, false);
+#endif
 }
 
 // eigenvalueText の入力値を検証し、適切な文字列に変換する.

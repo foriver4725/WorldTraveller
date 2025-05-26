@@ -18,5 +18,13 @@ public class WorldTraveller : ModuleRules
             "UMG",
             "ProceduralMeshComponent",
         });
+
+        if (Target.bBuildEditor)
+        {
+            PrivateDependencyModuleNames.AddRange(new string[]
+            {
+                "UnrealEd",
+            });
+        }
     }
 }

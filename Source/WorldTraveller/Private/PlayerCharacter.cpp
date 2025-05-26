@@ -5,6 +5,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "InputManager.h"
 #include "UiManager.h"
 #include "Enums/UiDescriptionTextType.h"
 #include "Enums/UiType.h"
@@ -41,27 +42,28 @@ void APlayerCharacter::BeginPlay()
 
 void APlayerCharacter::NotifyControllerChanged()
 {
-	using Subsystem = UEnhancedInputLocalPlayerSubsystem;
-
 	Super::NotifyControllerChanged();
 
+	using Subsystem = UEnhancedInputLocalPlayerSubsystem;
+
 	if (TObjectPtr<APlayerController> playerController = Cast<APlayerController>(Controller))
-	{
 		if (TObjectPtr<Subsystem> subsystem = ULocalPlayer::GetSubsystem<Subsystem>(playerController->GetLocalPlayer()))
 			subsystem->AddMappingContext(mappingContext, 0);
-	}
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	if (TObjectPtr<UEnhancedInputComponent> inputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	if (UEnhancedInputComponent* inputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		inputComponent->BindAction(interactAction, ETriggerEvent::Started, this, &APlayerCharacter::OnInteract);
-		inputComponent->BindAction(cancelAction, ETriggerEvent::Started, this, &APlayerCharacter::OnCancel);
-		inputComponent->BindAction(jumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		inputComponent->BindAction(jumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		inputComponent->BindAction(moveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 		inputComponent->BindAction(lookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+		inputComponent->BindAction(jumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+		inputComponent->BindAction(jumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+
+		inputComponent->BindAction(interactAction, ETriggerEvent::Started, this, &APlayerCharacter::OnInteractedPressed);
+		inputComponent->BindAction(cancelAction, ETriggerEvent::Started, this, &APlayerCharacter::OnCancelPressed);
+		inputComponent->BindAction(escapeAction, ETriggerEvent::Started, this, &APlayerCharacter::OnEscapePressed);
+		inputComponent->BindAction(escapeAction, ETriggerEvent::Completed, this, &APlayerCharacter::OnEscapeReleased);
 	}
 }
 
@@ -69,33 +71,55 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	FName outTag = "";
-	bClickable = CheckClickableRay(outTag);
-	clickableTag = outTag;
-	SetDispCanClick(bClickable);
-}
-
-void APlayerCharacter::OnInteract()
-{
-	static const FName Home_PedestalTag = TEXT("Pedestal");
-
-	if (bClickable)
 	{
-		if (clickableTag == Home_PedestalTag)
-		{
-			if (IsValid(uiManager))
-			{
-				if (IUiManager* iUiManager = Cast<IUiManager>(uiManager))
-					iUiManager->SetUiEnabled(UiType::Home_StartGame, true);
-			}
-		}
-		else;
+		FName outTag = "";
+		bClickable = CheckClickableRay(outTag);
+		clickableTag = outTag;
+
+		SetDispCanClick(bClickable);
+
+		if (AInputManager* inputManager = AInputManager::Instance())
+			if (inputManager->GetInteractPressed())
+				this->OnInteractedAgainstClickables();
 	}
 }
 
-void APlayerCharacter::OnCancel()
+void APlayerCharacter::OnInteractedAgainstClickables()
 {
-	OnPlayerCancelled.Broadcast();
+	if (!bClickable) return;
+
+	static const FName Home_PedestalTag = TEXT("Pedestal");
+
+	if (clickableTag == Home_PedestalTag)
+	{
+		if (IUiManager* iUiManager = Cast<IUiManager>(GetValid(uiManager)))
+			iUiManager->SetUiEnabled(UiType::Home_StartGame, true);
+	}
+	else;
+}
+
+void APlayerCharacter::OnInteractedPressed(const FInputActionValue& value)
+{
+	if (AInputManager* inputManager = AInputManager::Instance())
+		inputManager->InvokeInteractPressed();
+}
+
+void APlayerCharacter::OnCancelPressed(const FInputActionValue& value)
+{
+	if (AInputManager* inputManager = AInputManager::Instance())
+		inputManager->InvokeCancelPressed();
+}
+
+void APlayerCharacter::OnEscapePressed(const FInputActionValue& value)
+{
+	if (AInputManager* inputManager = AInputManager::Instance())
+		inputManager->InvokeEscapePressed();
+}
+
+void APlayerCharacter::OnEscapeReleased(const FInputActionValue& value)
+{
+	if (AInputManager* inputManager = AInputManager::Instance())
+		inputManager->InvokeEscapeReleased();
 }
 
 void APlayerCharacter::Move(const FInputActionValue& value)
