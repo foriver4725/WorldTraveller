@@ -9,6 +9,7 @@ class UUserWidget;
 class UImage;
 class UTextBlock;
 class UButton;
+class UCanvasPanel;
 
 enum class EUiDescriptionTextType : uint8;
 enum class EUiType : uint8;
@@ -30,6 +31,9 @@ public:
 	virtual void SetDescriptionText(DescTextType textType) override final;
 	virtual void SetUiEnabled(UiType type, bool bEnabled) override final;
 
+	void SetStarAmountUiEnabled(bool bEnabled);
+	void SetStarAmountText(uint64 starAmount);
+
 protected:
 	virtual void BeginPlay() override final;
 
@@ -43,6 +47,7 @@ private:
 	UPROPERTY() TObjectPtr<UUserWidget> userWidget = nullptr;
 	UPROPERTY() TObjectPtr<UImage> pointer = nullptr;
 	UPROPERTY() TObjectPtr<UTextBlock> descriptionText = nullptr;
+	UPROPERTY() TObjectPtr<UCanvasPanel> starAmountPanel = nullptr;
 	UPROPERTY() TObjectPtr<UTextBlock> starAmountText = nullptr;
 
 	bool bIsPointerActive = false;
