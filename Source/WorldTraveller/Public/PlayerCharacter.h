@@ -12,8 +12,6 @@ struct FInputActionValue;
 struct FRandomStream;
 class AHome_StartGameUiHandler;
 
-DECLARE_MULTICAST_DELEGATE(FOnPlayerCancelled);
-
 UCLASS()
 class WORLDTRAVELLER_API APlayerCharacter final : public ACharacter
 {
@@ -24,8 +22,6 @@ public:
 
 	void RandomizeJumpZVelocityMultiplier(const FRandomStream& rand);
 	void SetInputEnabled(bool bEnabled);
-
-	FOnPlayerCancelled OnPlayerCancelled;
 
 protected:
 	virtual void BeginPlay() override final;
@@ -38,19 +34,22 @@ private:
 	TObjectPtr<UInputMappingContext> mappingContext;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
+	TObjectPtr<UInputAction> moveAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
+	TObjectPtr<UInputAction> lookAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
+	TObjectPtr<UInputAction> jumpAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
 	TObjectPtr<UInputAction> interactAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
 	TObjectPtr<UInputAction> cancelAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
-	TObjectPtr<UInputAction> jumpAction;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
-	TObjectPtr<UInputAction> moveAction;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Property|Input")
-	TObjectPtr<UInputAction> lookAction;
+	TObjectPtr<UInputAction> escapeAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Property|Value", meta = (ClampMin = "10.0", ClampMax = "80.0"))
 	float slopLimit = 45.0f;
@@ -80,11 +79,14 @@ private:
 	bool bClickable = false;
 	FName clickableTag = "";
 
-	void OnInteract();
-	void OnCancel();
+	void OnInteractedPressed(const FInputActionValue& value);
+	void OnCancelPressed(const FInputActionValue& value);
+	void OnEscapePressed(const FInputActionValue& value);
+	void OnEscapeReleased(const FInputActionValue& value);
 	void Move(const FInputActionValue& value);
 	void Look(const FInputActionValue& value);
 
 	bool CheckClickableRay(FName& outTag);
 	void SetDispCanClick(bool bEnabled);
+	void OnInteractedAgainstClickables();
 };
