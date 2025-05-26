@@ -1,6 +1,8 @@
 ﻿#include "Home/UI/Home_StartGameUiHandler.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "Components/Image.h"
+#include "Components/TextBlock.h"
 #include "Components/EditableTextBox.h"
 #include "Kismet/GameplayStatics.h"
 #include "CursorManager.h"
@@ -33,17 +35,33 @@ void AHome_StartGameUiHandler::BeginPlay()
 			if (closeButton = Cast<UButton>(userWidget->GetWidgetFromName(TEXT("CloseButton"))))
 			{
 				closeButton->OnHovered.AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnCloseButtonHovered);
+				closeButton->OnUnhovered.AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnCloseButtonUnhovered);
 				closeButton->OnClicked.AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnCloseButtonClicked);
 			}
 
-			if (UButton* submitButton_CoinCollection = Cast<UButton>(userWidget->GetWidgetFromName(TEXT("SubmitButton_CoinCollection"))))
+			if (closeButtonImage = Cast<UImage>(userWidget->GetWidgetFromName(TEXT("CloseImage"))))
+			{
+				initCloseButtonImageSize = closeButtonImage->GetBrush().GetImageSize();
+			}
+
+			if (UButton* submitButton_CoinCollection =
+				Cast<UButton>(userWidget->GetWidgetFromName(TEXT("SubmitButton_CoinCollection"))))
 			{
 				submitButton_CoinCollection->OnHovered.
 					AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnSubmitButtonHovered_CoinCollection);
+				submitButton_CoinCollection->OnUnhovered.
+					AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnSubmitButtonUnhovered_CoinCollection);
 				submitButton_CoinCollection->OnClicked.
 					AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnSubmitButtonClicked_CoinCollection);
 
 				submitButtons.Add(EInGameType::CoinCollection, submitButton_CoinCollection);
+			}
+
+			if (UTextBlock* submitButtonText_CoinCollection =
+				Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("SubmitLabel_CoinCollection"))))
+			{
+				submitButtonTexts.Add(EInGameType::CoinCollection, submitButtonText_CoinCollection);
+				initSubmitButtonTextFontSizes.Add(EInGameType::CoinCollection, submitButtonText_CoinCollection->Font.Size);
 			}
 
 			if (eigenvalueText = Cast<UEditableTextBox>(userWidget->GetWidgetFromName(TEXT("EigenvalueText"))))
@@ -67,12 +85,31 @@ void AHome_StartGameUiHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		playerCharacter->OnPlayerCancelled.Remove(onPlayerCancelledHandle);
 
 	submitButtons.Empty();
+	submitButtonTexts.Empty();
+	initSubmitButtonTextFontSizes.Empty();
 }
 
 void AHome_StartGameUiHandler::OnCloseButtonHovered()
 {
 	if (ASoundManager* soundManager = ASoundManager::Instance())
 		soundManager->Play2D(ESoundType::General_ButtonHovered);
+
+	if (UImage* p = GetValid(closeButtonImage))
+	{
+		FSlateBrush brush = p->GetBrush();
+		brush.ImageSize *= sizeMultiplierOnHovered;
+		p->SetBrush(brush);
+	}
+}
+
+void AHome_StartGameUiHandler::OnCloseButtonUnhovered()
+{
+	if (UImage* p = GetValid(closeButtonImage))
+	{
+		FSlateBrush brush = p->GetBrush();
+		brush.ImageSize = initCloseButtonImageSize;
+		p->SetBrush(brush);
+	}
 }
 
 void AHome_StartGameUiHandler::OnCloseButtonClicked()
@@ -89,6 +126,26 @@ void AHome_StartGameUiHandler::OnSubmitButtonHovered(EInGameType type)
 	{
 		if (ASoundManager* soundManager = ASoundManager::Instance())
 			soundManager->Play2D(ESoundType::General_ButtonHovered);
+
+		if (UTextBlock* p = GetValid(submitButtonTexts.FindRef(EInGameType::CoinCollection, nullptr)))
+		{
+			FSlateFontInfo font = p->Font;
+			font.Size *= sizeMultiplierOnHovered;
+			p->SetFont(font);
+		}
+	}
+}
+
+void AHome_StartGameUiHandler::OnSubmitButtonUnhovered(EInGameType type)
+{
+	if (type == EInGameType::CoinCollection)
+	{
+		if (UTextBlock* p = GetValid(submitButtonTexts.FindRef(EInGameType::CoinCollection, nullptr)))
+		{
+			FSlateFontInfo font = p->Font;
+			font.Size = initSubmitButtonTextFontSizes.FindRef(EInGameType::CoinCollection, 0);
+			p->SetFont(font);
+		}
 	}
 }
 
