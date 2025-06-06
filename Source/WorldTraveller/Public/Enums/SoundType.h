@@ -6,8 +6,9 @@
 UENUM()
 enum class ESoundType : uint8
 {
-	General_ButtonClicked,
 	General_ButtonHovered,
+	General_ButtonClicked,
+	General_ButtonClickFailed,
 	General_TriggerUi,
 
 	Main_Bgm,

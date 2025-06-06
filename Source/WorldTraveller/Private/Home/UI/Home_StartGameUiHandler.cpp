@@ -5,6 +5,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/EditableTextBox.h"
+#include "Components/Widget.h"
 #include "Kismet/GameplayStatics.h"
 #include "InputManager.h"
 #include "CursorManager.h"
@@ -43,11 +44,8 @@ void AHome_StartGameUiHandler::BeginPlay()
 				closeButton->OnHovered.AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnCloseButtonHovered);
 				closeButton->OnUnhovered.AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnCloseButtonUnhovered);
 				closeButton->OnClicked.AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnCloseButtonClicked);
-			}
 
-			if (closeButtonImage = Cast<UImage>(userWidget->GetWidgetFromName(TEXT("CloseImage"))))
-			{
-				initCloseButtonImageSize = closeButtonImage->GetBrush().GetImageSize();
+				initCloseButtonSize = closeButton->GetRenderTransform().Scale;
 			}
 
 			if (UButton* submitButton_CoinCollection =
@@ -61,13 +59,43 @@ void AHome_StartGameUiHandler::BeginPlay()
 					AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnSubmitButtonClicked_CoinCollection);
 
 				submitButtons.Add(EInGameType::CoinCollection, submitButton_CoinCollection);
+				initSubmitButtonSizes.Add(EInGameType::CoinCollection, submitButton_CoinCollection->GetRenderTransform().Scale);
 			}
-
-			if (UTextBlock* submitButtonText_CoinCollection =
-				Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("SubmitLabel_CoinCollection"))))
+			if (UButton* submitButton_Null_1 =
+				Cast<UButton>(userWidget->GetWidgetFromName(TEXT("Null_1"))))
 			{
-				submitButtonTexts.Add(EInGameType::CoinCollection, submitButtonText_CoinCollection);
-				initSubmitButtonTextFontSizes.Add(EInGameType::CoinCollection, submitButtonText_CoinCollection->GetFont().Size);
+				submitButton_Null_1->OnHovered.
+					AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnSubmitButtonHovered_Null_1);
+				submitButton_Null_1->OnUnhovered.
+					AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnSubmitButtonUnhovered_Null_1);
+				submitButton_Null_1->OnClicked.
+					AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnSubmitButtonClicked_Null_1);
+				submitButtons.Add(EInGameType::Null_1, submitButton_Null_1);
+				initSubmitButtonSizes.Add(EInGameType::Null_1, submitButton_Null_1->GetRenderTransform().Scale);
+			}
+			if (UButton* submitButton_Null_2 =
+				Cast<UButton>(userWidget->GetWidgetFromName(TEXT("Null_2"))))
+			{
+				submitButton_Null_2->OnHovered.
+					AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnSubmitButtonHovered_Null_2);
+				submitButton_Null_2->OnUnhovered.
+					AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnSubmitButtonUnhovered_Null_2);
+				submitButton_Null_2->OnClicked.
+					AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnSubmitButtonClicked_Null_2);
+				submitButtons.Add(EInGameType::Null_2, submitButton_Null_2);
+				initSubmitButtonSizes.Add(EInGameType::Null_2, submitButton_Null_2->GetRenderTransform().Scale);
+			}
+			if (UButton* submitButton_Null_3 =
+				Cast<UButton>(userWidget->GetWidgetFromName(TEXT("Null_3"))))
+			{
+				submitButton_Null_3->OnHovered.
+					AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnSubmitButtonHovered_Null_3);
+				submitButton_Null_3->OnUnhovered.
+					AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnSubmitButtonUnhovered_Null_3);
+				submitButton_Null_3->OnClicked.
+					AddUniqueDynamic(this, &AHome_StartGameUiHandler::OnSubmitButtonClicked_Null_3);
+				submitButtons.Add(EInGameType::Null_3, submitButton_Null_3);
+				initSubmitButtonSizes.Add(EInGameType::Null_3, submitButton_Null_3->GetRenderTransform().Scale);
 			}
 
 			if (eigenvalueText = Cast<UEditableTextBox>(userWidget->GetWidgetFromName(TEXT("EigenvalueText"))))
@@ -102,8 +130,7 @@ void AHome_StartGameUiHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 	submitButtons.Empty();
-	submitButtonTexts.Empty();
-	initSubmitButtonTextFontSizes.Empty();
+	initSubmitButtonSizes.Empty();
 }
 
 // 難解すぎるので、後ほどリファクタ必要かも.
@@ -177,22 +204,14 @@ void AHome_StartGameUiHandler::OnCloseButtonHovered()
 	if (ASoundManager* soundManager = ASoundManager::Instance())
 		soundManager->Play2D(ESoundType::General_ButtonHovered);
 
-	if (UImage* p = GetValid(closeButtonImage))
-	{
-		FSlateBrush brush = p->GetBrush();
-		brush.ImageSize *= sizeMultiplierOnHovered;
-		p->SetBrush(brush);
-	}
+	if (UButton* button = GetValid(closeButton))
+		button->SetRenderScale(initCloseButtonSize * closeButtonMultiplierOnHovered);
 }
 
 void AHome_StartGameUiHandler::OnCloseButtonUnhovered()
 {
-	if (UImage* p = GetValid(closeButtonImage))
-	{
-		FSlateBrush brush = p->GetBrush();
-		brush.ImageSize = initCloseButtonImageSize;
-		p->SetBrush(brush);
-	}
+	if (UButton* button = GetValid(closeButton))
+		button->SetRenderScale(initCloseButtonSize);
 }
 
 void AHome_StartGameUiHandler::OnCloseButtonClicked()
@@ -210,12 +229,8 @@ void AHome_StartGameUiHandler::OnSubmitButtonHovered(EInGameType type)
 		if (ASoundManager* soundManager = ASoundManager::Instance())
 			soundManager->Play2D(ESoundType::General_ButtonHovered);
 
-		if (UTextBlock* p = GetValid(submitButtonTexts.FindRef(EInGameType::CoinCollection, nullptr)))
-		{
-			FSlateFontInfo font = p->GetFont();
-			font.Size *= sizeMultiplierOnHovered;
-			p->SetFont(font);
-		}
+		if (UButton* button = GetValid(submitButtons.FindRef(EInGameType::CoinCollection, nullptr)))
+			button->SetRenderScale(initSubmitButtonSizes.FindRef(EInGameType::CoinCollection, FVector2D::ZeroVector) * submitButtonMultiplierOnHovered);
 	}
 }
 
@@ -223,12 +238,8 @@ void AHome_StartGameUiHandler::OnSubmitButtonUnhovered(EInGameType type)
 {
 	if (type == EInGameType::CoinCollection)
 	{
-		if (UTextBlock* p = GetValid(submitButtonTexts.FindRef(EInGameType::CoinCollection, nullptr)))
-		{
-			FSlateFontInfo font = p->GetFont();
-			font.Size = initSubmitButtonTextFontSizes.FindRef(EInGameType::CoinCollection, 0);
-			p->SetFont(font);
-		}
+		if (UButton* button = GetValid(submitButtons.FindRef(EInGameType::CoinCollection, nullptr)))
+			button->SetRenderScale(initSubmitButtonSizes.FindRef(EInGameType::CoinCollection, FVector2D::ZeroVector));
 	}
 }
 
@@ -254,6 +265,11 @@ void AHome_StartGameUiHandler::OnSubmitButtonClicked(EInGameType type)
 
 		if (IsValid(loadUiHandler))
 			loadUiHandler->StartFadeOut(FLevelNames::Main());
+	}
+	else
+	{
+		if (ASoundManager* soundManager = ASoundManager::Instance())
+			soundManager->Play2D(ESoundType::General_ButtonClickFailed);
 	}
 }
 
