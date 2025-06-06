@@ -45,6 +45,7 @@ private:
 	TObjectPtr<AHome_StartGameUiHandler> startGameUiHandler;
 
 	UPROPERTY() TObjectPtr<UUserWidget> userWidget = nullptr;
+	UPROPERTY() TObjectPtr<UTextBlock> versionLabel = nullptr;
 	UPROPERTY() TObjectPtr<UImage> pointer = nullptr;
 	UPROPERTY() TObjectPtr<UTextBlock> descriptionText = nullptr;
 	UPROPERTY() TObjectPtr<UCanvasPanel> starAmountPanel = nullptr;
