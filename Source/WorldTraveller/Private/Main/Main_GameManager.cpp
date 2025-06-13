@@ -179,11 +179,26 @@ void AMain_GameManager::Tick(float DeltaTime)
 			gameTime = 0;
 			state = EState::EndWait;
 
-			// スターの数を計算して、セーブデータに保存する.
-			starAmount = CalcStarFromCoin(coinAmount);
+			// セーブデータを更新する.
 			if (ASaveGameManager* saveGameManager = ASaveGameManager::Instance())
+			{
+				// スターの数を計算して、増やす.
+				starAmount = CalcStarFromCoin(coinAmount);
 				if (UItemSaveGame* itemSaveGame = Cast<UItemSaveGame>(saveGameManager->Get(ESaveGameType::Item)))
 					itemSaveGame->AddStarAmount(starAmount);
+
+				// インゲームをクリアしたことがあると、フラグを立てる.
+				if (UProgSaveGame* progSaveGame = Cast<UProgSaveGame>(saveGameManager->Get(ESaveGameType::Prog)))
+					progSaveGame->AchieveHasPlayedInGame();
+
+				// 記録を更新.
+				if (URecordSaveGame* recordSaveGame = Cast<URecordSaveGame>(saveGameManager->Get(ESaveGameType::Record)))
+				{
+					recordSaveGame->Add_CoinCollection_PlayTimes(1);
+					recordSaveGame->Set_CoinCollection_MaxCoins(coinAmount);
+					recordSaveGame->Add_CoinCollection_TotalEarnedStars(starAmount);
+				}
+			}
 
 			if (AMain_InGameUiHandler* p = GetValid(inGameUiHandler))
 				p->SetEndTextEnabled(true);

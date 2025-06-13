@@ -47,6 +47,13 @@ void ASaveGameManager::Save(ESaveGameType type)
 		if (IsValid(itemSaveGame))
 			UGameplayStatics::SaveGameToSlot(itemSaveGame, GetSlotName(type).ToString(), UserIndex);
 	}
+	else if (type == ESaveGameType::Record)
+	{
+		if (!IsValid(recordSaveGame))
+			recordSaveGame = Cast<URecordSaveGame>(Create(type));
+		if (IsValid(recordSaveGame))
+			UGameplayStatics::SaveGameToSlot(recordSaveGame, GetSlotName(type).ToString(), UserIndex);
+	}
 	else if (type == ESaveGameType::All)
 	{
 		for (uint8 i = 0; i < static_cast<uint8>(ESaveGameType::All); ++i)
@@ -70,6 +77,13 @@ void ASaveGameManager::Load(ESaveGameType type)
 		else
 			itemSaveGame = Cast<UItemSaveGame>(Create(type));
 	}
+	else if (type == ESaveGameType::Record)
+	{
+		if (UGameplayStatics::DoesSaveGameExist(GetSlotName(type).ToString(), UserIndex))
+			recordSaveGame = Cast<URecordSaveGame>(UGameplayStatics::LoadGameFromSlot(GetSlotName(type).ToString(), UserIndex));
+		else
+			recordSaveGame = Cast<URecordSaveGame>(Create(type));
+	}
 	else if (type == ESaveGameType::All)
 	{
 		for (uint8 i = 0; i < static_cast<uint8>(ESaveGameType::All); ++i)
@@ -81,6 +95,7 @@ USaveGame* ASaveGameManager::Get(ESaveGameType type)
 {
 	if (type == ESaveGameType::Prog) return IsValid(progSaveGame) ? progSaveGame : nullptr;
 	if (type == ESaveGameType::Item) return IsValid(itemSaveGame) ? itemSaveGame : nullptr;
+	if (type == ESaveGameType::Record) return IsValid(recordSaveGame) ? recordSaveGame : nullptr;
 
 	return nullptr;
 }
@@ -94,6 +109,7 @@ static USaveGame* Create(ESaveGameType type)
 {
 	if (type == ESaveGameType::Prog) return UGameplayStatics::CreateSaveGameObject(UProgSaveGame::StaticClass());
 	if (type == ESaveGameType::Item) return UGameplayStatics::CreateSaveGameObject(UItemSaveGame::StaticClass());
+	if (type == ESaveGameType::Record) return UGameplayStatics::CreateSaveGameObject(URecordSaveGame::StaticClass());
 
 	return nullptr;
 }
@@ -102,6 +118,7 @@ static FName GetSlotName(ESaveGameType type)
 {
 	if (type == ESaveGameType::Prog) return TEXT("Prog");
 	if (type == ESaveGameType::Item) return TEXT("Item");
+	if (type == ESaveGameType::Record) return TEXT("Record");
 
 	return NAME_None;
 }

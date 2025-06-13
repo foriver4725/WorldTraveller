@@ -8,5 +8,6 @@ enum class ESaveGameType : uint8
 {
 	Prog,
 	Item,
+	Record,
 	All,
 };
