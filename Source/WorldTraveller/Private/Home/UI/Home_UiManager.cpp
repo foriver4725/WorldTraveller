@@ -26,10 +26,24 @@ void AHome_UiManager::BeginPlay()
 		userWidget = CreateWidget<UUserWidget>(GetWorld(), widgetClass);
 		if (IsValid(userWidget))
 		{
+			versionLabel = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("VersionLabel")));
 			pointer = Cast<UImage>(userWidget->GetWidgetFromName(TEXT("Pointer")));
 			descriptionText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("DescriptionText")));
 			starAmountPanel = Cast<UCanvasPanel>(userWidget->GetWidgetFromName(TEXT("StarAmount")));
 			starAmountText = Cast<UTextBlock>(userWidget->GetWidgetFromName(TEXT("StarAmountText")));
+
+			if (UTextBlock* text = GetValid(versionLabel))
+			{
+				FString version;
+				GConfig->GetString(
+					TEXT("/Script/EngineSettings.GeneralProjectSettings"),
+					TEXT("ProjectVersion"),
+					version,
+					GGameIni
+				);
+
+				text->SetText(FText::FromString(FString::Printf(TEXT("v %s"), *version)));
+			}
 
 			this->SetStarAmountUiEnabled(false);
 			this->SetStarAmountText(0);
@@ -55,7 +69,7 @@ void AHome_UiManager::SetPointerActivation(bool bActivate)
 void AHome_UiManager::SetDescriptionText(DescTextType textType)
 {
 	static const FText NoneText = FText::GetEmpty();
-	static const FText CanClickText = FText::FromString(TEXT("Interact"));
+	static const FText CanClickText = FText::FromString(TEXT("Interact (Mouse Click)"));
 
 	if (currentDescriptionText == textType)
 		return;

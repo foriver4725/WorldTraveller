@@ -49,7 +49,7 @@ void AMain_UiManager::SetPointerActivation(bool bActivate)
 void AMain_UiManager::SetDescriptionText(DescTextType textType)
 {
 	static const FText NoneText = FText::GetEmpty();
-	static const FText CanClickText = FText::FromString(TEXT("Interact"));
+	static const FText CanClickText = FText::FromString(TEXT("Interact (Mouse Click)"));
 
 	if (currentDescriptionText == textType)
 		return;

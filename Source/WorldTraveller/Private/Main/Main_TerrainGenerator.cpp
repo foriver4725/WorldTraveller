@@ -59,7 +59,7 @@ void AMain_TerrainGenerator::GenerateRandomTerrain(const FRandomStream& rand)
 		{
 			float Z = HeightMap[Y][X];
 			Vertices.Add(FVector((X - (Width >> 1)) * vertexXyScale, (Y - (Height >> 1)) * vertexXyScale, Z) * vertexFinalScale);
-			UVs.Add(FVector2D((float)X / (Width - 1), (float)Y / (Height - 1)));
+			UVs.Add(FVector2D((float)X / (Width - 1), (float)Y / (Height - 1)) * uvScale);
 			VertexColors.Add(FLinearColor::White);
 			Normals.Add(FVector::ZeroVector); // 仮値。あとで計算
 			Tangents.Add(FProcMeshTangent(1.0f, 0.0f, 0.0f)); // 仮の接線

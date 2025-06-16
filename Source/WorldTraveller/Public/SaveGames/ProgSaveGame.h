@@ -10,10 +10,9 @@ class WORLDTRAVELLER_API UProgSaveGame final : public USaveGame
 	GENERATED_BODY()
 
 public:
-	inline bool GetHasLogined() const { return hasLogined; }
-	inline void SetHasLogined(bool b) { hasLogined |= b; }
+	inline bool GetHasPlayedInGame() const { return hasPlayedInGame; }
+	inline void AchieveHasPlayedInGame() { hasPlayedInGame |= true; }
 
 private:
-	// 厳密には、"Home レベルに遷移したことがあるか".
-	UPROPERTY() bool hasLogined = false;
+	UPROPERTY() bool hasPlayedInGame = false;
 };

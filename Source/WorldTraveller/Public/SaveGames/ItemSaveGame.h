@@ -11,7 +11,6 @@ class WORLDTRAVELLER_API UItemSaveGame final : public USaveGame
 
 public:
 	inline uint64 GetStarAmount() const { return starAmount; }
-	inline void SetStarAmount(uint64 amount) { starAmount = amount; }
 	inline void AddStarAmount(uint64 amount) { if (starAmount <= MAX_uint64 - amount) starAmount += amount; }
 
 private:

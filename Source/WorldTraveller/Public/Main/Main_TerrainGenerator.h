@@ -49,6 +49,10 @@ private:
 	UPROPERTY(EditInstanceOnly, Category = "Property|Value", meta = (ClampMin = "0.0", ClampMax = "1000.0"))
 	float noiseHeightScaleMax = 200.0f;
 
+	// UV座標のスケール倍率 (テクスチャを何回リピートするか)
+	UPROPERTY(EditInstanceOnly, Category = "Property|Value", meta = (ClampMin = "0", ClampMax = "1000"))
+	int uvScale = 10;
+
 	UPROPERTY(EditInstanceOnly, Category = "Property|Value")
 	FVector meshWorldLocation = FVector::ZeroVector;
 
