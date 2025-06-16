@@ -4,9 +4,11 @@
 #include "GameFramework/Actor.h"
 #include "SaveGames/ProgSaveGame.h"
 #include "SaveGames/ItemSaveGame.h"
+#include "SaveGames/RecordSaveGame.h"
 #include "Enums/SaveGameType.h"
 #include "SaveGameManager.generated.h"
 
+// BeginPlay で初期化しているので、それ以降でメソッドを呼び出すこと.
 UCLASS()
 class WORLDTRAVELLER_API ASaveGameManager final : public AActor
 {
@@ -35,6 +37,7 @@ private:
 	// SaveGames.
 	UPROPERTY() TObjectPtr<UProgSaveGame> progSaveGame = nullptr;
 	UPROPERTY() TObjectPtr<UItemSaveGame> itemSaveGame = nullptr;
+	UPROPERTY() TObjectPtr<URecordSaveGame> recordSaveGame = nullptr;
 
 	FTimerHandle autoSaveTimerHandle;
 
