@@ -30,6 +30,9 @@ private:
 	UPROPERTY(EditInstanceOnly, Category = "Property|Dependency")
 	TObjectPtr<AStaticMeshActor> westWall;
 
+	UPROPERTY(EditInstanceOnly, Category = "Property|Dependency")
+	TObjectPtr<AActor> eastUnlockUi;
+
 	void UnlockNorthRoom();  // プレイ記録展示部屋
 	void UnlockEastRoom();  // 使用用途未定
 	void UnlockSouthRoom();  // 使用用途未定
